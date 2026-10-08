@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>체세포분열 · 생식세포분열 자기주도학습지</title>
+<style>
+  :root{
+    --paper:#faf6ee;
+    --paper-dim:#f1ead9;
+    --ink:#2e2a24;
+    --ink-soft:#6b6355;
+    --line:#ddd2ba;
+    --moss:#5c7a52;
+    --moss-dim:#e4ebdf;
+    --clay:#bd5b3d;
+    --clay-dim:#f6e4db;
+    --water:#3f74a0;
+    --water-dim:#e0ebf3;
+    --gold:#c79a3c;
+    --gold-dim:#f8edd4;
+    --ok:#4c8a52;
+    --bad:#c2503f;
+    --radius:14px;
+    --serif:"Noto Serif KR","Nanum Myeongjo",serif;
+    --sans:"Noto Sans KR","Pretendard",-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); line-height:1.6; padding-bottom:80px;
+  }
+  .wrap{max-width:980px; margin:0 auto; padding:0 20px;}
+  header.hero{
+    background:linear-gradient(135deg,#3b4a33,#5c7a52);
+    color:#fbf8ef; padding:40px 20px 34px;
+    border-bottom:6px solid var(--gold);
+  }
+  header.hero .wrap{max-width:980px;}
+  .eyebrow{font-size:13px; letter-spacing:.14em; text-transform:uppercase; opacity:.85; font-weight:700;}
+  h1.title{font-family:var(--serif); font-size:32px; margin:10px 0 8px; line-height:1.35;}
+  .sub{font-size:15px; opacity:.92;}
+  .meta-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px;}
+  .meta-chip{background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.35);
+    padding:7px 14px; border-radius:999px; font-size:13px;}
+  .meta-chip input{background:transparent; border:none; border-bottom:1px dashed rgba(255,255,255,.6);
+    color:#fff; font-size:13px; font-family:var(--sans); width:70px; outline:none;}
+
+  nav.jumpnav{position:sticky; top:0; z-index:40; background:#fffdf8; border-bottom:1px solid var(--line);
+    box-shadow:0 2px 8px rgba(0,0,0,.04);}
+  nav.jumpnav .wrap{display:flex; gap:4px; overflow-x:auto; padding:10px 20px; max-width:980px;}
+  nav.jumpnav a{flex:0 0 auto; font-size:13px; font-weight:700; color:var(--ink-soft);
+    text-decoration:none; padding:7px 12px; border-radius:999px; white-space:nowrap;}
+  nav.jumpnav a:hover{background:var(--moss-dim); color:var(--moss);}
+
+  section.part{padding:40px 0 10px;}
+  .part-head{display:flex; align-items:baseline; gap:12px; margin-bottom:6px;}
+  .part-num{font-family:var(--serif); font-size:15px; color:#fff; background:var(--moss);
+    padding:3px 12px; border-radius:999px; font-weight:700;}
+  .part-num.clay{background:var(--clay);}
+  .part-num.water{background:var(--water);}
+  .part-num.gold{background:var(--gold);}
+  h2.part-title{font-family:var(--serif); font-size:25px; margin:0;}
+  .part-desc{color:var(--ink-soft); font-size:14.5px; margin:10px 0 26px; max-width:760px;}
+
+  .card{background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 24px; margin-bottom:22px; box-shadow:0 2px 10px rgba(80,65,40,.04);}
+  .card h3{font-family:var(--serif); font-size:19px; margin:0 0 4px; display:flex; align-items:center; gap:8px;}
+  .card .hint{color:var(--ink-soft); font-size:13.5px; margin:0 0 16px;}
+  .tag{display:inline-block; font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:6px;
+    background:var(--moss-dim); color:var(--moss); letter-spacing:.02em;}
+  .tag.clay{background:var(--clay-dim); color:var(--clay);}
+  .tag.water{background:var(--water-dim); color:var(--water);}
+  .tag.gold{background:var(--gold-dim); color:#916d1f;}
+
+  /* ---------- ordering activity ---------- */
+  .order-activity{border:1px dashed var(--line); border-radius:12px; padding:18px; background:var(--paper-dim);}
+  .order-label{font-size:13px; font-weight:700; color:var(--ink-soft); margin-bottom:8px;}
+  .order-tray{display:flex; flex-wrap:wrap; gap:10px; min-height:74px; padding:10px; background:#fff;
+    border-radius:10px; border:1px solid var(--line); margin-bottom:14px;}
+  .order-slots{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:14px;}
+  .card-tile{width:96px; cursor:pointer; user-select:none; border-radius:9px; overflow:hidden;
+    border:2px solid var(--line); background:#fff; transition:transform .12s, border-color .12s; position:relative;}
+  .card-tile:hover{transform:translateY(-2px); border-color:var(--moss);}
+  .card-tile img{width:100%; height:72px; object-fit:cover; display:block; background:#eee;}
+  .card-tile .cap{font-size:11px; text-align:center; padding:4px 2px; color:var(--ink-soft); font-weight:700;}
+  .card-tile.placed{opacity:.35; cursor:default; pointer-events:none;}
+
+  .slot{width:96px; min-height:104px; border:2px dashed var(--line); border-radius:9px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:#fff; position:relative; cursor:pointer;}
+  .slot .num{position:absolute; top:3px; left:6px; font-size:11px; font-weight:800; color:var(--ink-soft);}
+  .slot img{width:100%; height:72px; object-fit:cover; margin-top:14px;}
+  .slot .cap{font-size:10.5px; text-align:center; padding:3px 2px; color:var(--ink-soft); font-weight:700;}
+  .slot.filled{border-style:solid;}
+  .slot.correct{border-color:var(--ok); background:#eef7ee;}
+  .slot.wrong{border-color:var(--bad); background:#fcecea;}
+  .slot .mark{position:absolute; top:2px; right:4px; font-size:13px; font-weight:900;}
+  .slot .mark.ok{color:var(--ok);}
+  .slot .mark.no{color:var(--bad);}
+  .slot-label{font-size:10px; text-align:center; color:var(--ink-soft); margin-top:2px; min-height:12px;}
+
+  .zoom-btn{position:absolute; top:3px; right:3px; width:20px; height:20px; border-radius:50%;
+    background:rgba(30,26,20,.62); color:#fff; border:none; font-size:11px; line-height:20px; text-align:center;
+    cursor:pointer; z-index:6; padding:0;}
+  .zoom-btn:hover{background:rgba(30,26,20,.85);}
+  #lightbox{position:fixed; inset:0; background:rgba(20,17,12,.82); display:none; align-items:center;
+    justify-content:center; z-index:999; padding:30px; cursor:zoom-out;}
+  #lightbox.open{display:flex;}
+  #lightbox img{max-width:min(90vw,640px); max-height:85vh; border-radius:10px; box-shadow:0 10px 40px rgba(0,0,0,.5); background:#fff;}
+  #lightbox .lb-close{position:absolute; top:18px; right:22px; color:#fff; font-size:28px; cursor:pointer; font-weight:300;}
+
+  /* ---------- pick-one activity ---------- */
+  .pick-activity{border:1px dashed var(--line); border-radius:12px; padding:18px; background:var(--paper-dim);}
+  .pick-grid{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:14px;}
+  .pick-tile{width:110px; cursor:pointer; user-select:none; border-radius:9px; overflow:hidden;
+    border:2px solid var(--line); background:#fff; transition:transform .12s, border-color .12s; position:relative;}
+  .pick-tile:hover{transform:translateY(-2px); border-color:var(--water);}
+  .pick-tile img{width:100%; height:82px; object-fit:cover; display:block; background:#eee;}
+  .pick-tile .cap{font-size:11px; text-align:center; padding:4px 2px; color:var(--ink-soft); font-weight:700;}
+  .pick-tile.sel{border-color:var(--water); box-shadow:0 0 0 2px var(--water-dim) inset;}
+  .pick-tile.correct{border-color:var(--ok); background:#eef7ee;}
+  .pick-tile.wrong{border-color:var(--bad); background:#fcecea;}
+  .pick-tile .mark{position:absolute; top:3px; left:4px; font-size:13px; font-weight:900; background:#fff;
+    border-radius:50%; width:18px; height:18px; line-height:18px; text-align:center;}
+  .pick-tile .mark.ok{color:var(--ok);}
+  .pick-tile .mark.no{color:var(--bad);}
+
+  .order-controls{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+  button.btn{font-family:var(--sans); font-weight:700; font-size:13.5px; border:none; border-radius:999px;
+    padding:9px 18px; cursor:pointer; transition:filter .15s;}
+  button.btn:hover{filter:brightness(.94);}
+  button.btn.primary{background:var(--moss); color:#fff;}
+  button.btn.ghost{background:#fff; color:var(--ink-soft); border:1px solid var(--line);}
+  button.btn.clay{background:var(--clay); color:#fff;}
+  .feedback-line{margin-top:10px; font-size:13.5px; font-weight:700; min-height:18px;}
+  .feedback-line.ok{color:var(--ok);}
+  .feedback-line.bad{color:var(--bad);}
+
+  /* ---------- fill-in table ---------- */
+  table.fill{width:100%; border-collapse:collapse; font-size:13.5px;}
+  table.fill th, table.fill td{border:1px solid var(--line); padding:9px 10px; text-align:left; vertical-align:top;}
+  table.fill th{background:var(--moss-dim); color:#3a4d35; font-weight:800; font-size:12.5px;}
+  table.fill td.stage{font-weight:800; white-space:nowrap; background:var(--paper-dim);}
+  table.fill textarea, table.fill input[type=text]{
+    width:100%; border:1px solid var(--line); border-radius:7px; padding:6px 8px; font-family:var(--sans);
+    font-size:13px; resize:vertical; background:#fffefb;
+  }
+  table.fill textarea{min-height:44px;}
+
+  details.answer{margin-top:10px; border:1px solid var(--gold); border-radius:9px; overflow:hidden;}
+  details.answer summary{cursor:pointer; background:var(--gold-dim); color:#8a6418; font-weight:800;
+    font-size:13px; padding:9px 14px; list-style:none;}
+  details.answer summary::-webkit-details-marker{display:none;}
+  details.answer summary::before{content:"▸ "; }
+  details.answer[open] summary::before{content:"▾ ";}
+  .answer-body{padding:14px 16px; font-size:13.5px; background:#fffdf5; color:#5a4d2e;}
+  .answer-body table.fill th{background:#f1e3c3;}
+  .answer-body p{margin:6px 0;}
+
+  /* ---------- quiz-ish Q/A ---------- */
+  .qa{margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--line);}
+  .qa:last-child{border-bottom:none; margin-bottom:0; padding-bottom:0;}
+  .qa .q{font-weight:700; margin-bottom:8px; font-size:14px;}
+  .qa .q .qnum{display:inline-block; background:var(--ink); color:#fff; font-size:11px; font-weight:800;
+    width:20px; height:20px; line-height:20px; text-align:center; border-radius:50%; margin-right:6px;}
+  .qa input[type=text]{width:100%; max-width:420px; border:1px solid var(--line); border-radius:7px;
+    padding:7px 10px; font-size:13.5px; font-family:var(--sans); background:#fffefb;}
+  .choice-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:4px;}
+  .choice{border:1px solid var(--line); border-radius:999px; padding:7px 14px; font-size:13px;
+    cursor:pointer; background:#fff; font-weight:600;}
+  .choice.sel{border-color:var(--moss); background:var(--moss-dim); color:var(--moss); font-weight:800;}
+
+  /* ---------- graph ---------- */
+  .graph-box{background:#fffefb; border:1px solid var(--line); border-radius:12px; padding:16px;}
+  .graph-box svg{width:100%; height:auto; display:block;}
+  .graph-caption{font-size:12px; color:var(--ink-soft); text-align:center; margin-top:4px;}
+
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:760px){.two-col{grid-template-columns:1fr;}}
+
+  .note-box{background:var(--water-dim); border-left:4px solid var(--water); border-radius:0 10px 10px 0;
+    padding:12px 16px; font-size:13.5px; color:#274a63; margin:14px 0;}
+  .note-box.warn{background:var(--clay-dim); border-left-color:var(--clay); color:#7c3821;}
+
+  footer.endcap{text-align:center; padding:50px 20px 10px; color:var(--ink-soft); font-size:13px;}
+  .pin{width:28px;height:28px;border-radius:50%;background:var(--moss);color:#fff;display:inline-flex;
+    align-items:center;justify-content:center;font-size:13px;font-weight:800;}
+
+  .diag-row{display:flex; align-items:center; justify-content:center; gap:4px; flex-wrap:wrap; margin:10px 0;}
+  .diag-cell{text-align:center; font-size:12px; color:var(--ink-soft); font-weight:700;}
+  .diag-cell img{display:block; width:84px; height:64px; object-fit:cover; border-radius:7px; border:1px solid var(--line); margin-bottom:4px;}
+  .diag-arrow{color:var(--line); font-size:20px; padding:0 2px; align-self:center; margin-top:-16px;}
+
+  .score-pill{display:inline-block; font-size:12px; font-weight:800; padding:4px 10px; border-radius:999px;
+    background:var(--ink); color:#fff; margin-left:8px;}
+
+  .qa textarea.ans, table.fill textarea.ans{width:100%; max-width:none; border:1px solid var(--line); border-radius:7px;
+    padding:7px 10px; font-size:13.5px; font-family:var(--sans); background:#fffefb; resize:none; overflow:hidden; line-height:1.5; min-height:36px;}
+  .save-bar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:18px;}
+  .save-bar .hintline{font-size:12.5px; opacity:.9;}
+  button.btn.save{background:#fff; color:#3b4a33; font-size:14px; padding:11px 22px;}
+  .footer-save{background:var(--gold-dim); border:1px solid var(--gold); border-radius:var(--radius); padding:20px 22px; margin:10px 0 0; text-align:center;}
+  .footer-save p{margin:6px 0 14px; font-size:13.5px; color:#6b5520;}
+  @media print{
+    @page{size:A4; margin:12mm;}
+    *{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    body{background:#fff; padding-bottom:0;}
+    nav.jumpnav, .save-bar, .footer-save, .order-controls, .zoom-btn, .order-tray, details.answer,
+    .order-label, #lightbox, footer.endcap{display:none !important;}
+    header.hero{background:#fff !important; color:#2e2a24; border-bottom:2px solid #2e2a24; padding:8px 0 10px;}
+    header.hero .sub, .eyebrow{display:none;}
+    h1.title{font-size:20px; margin:0 0 8px; color:#2e2a24;}
+    .meta-chip{border:1px solid #2e2a24; background:#fff; color:#2e2a24;}
+    .meta-chip input{color:#2e2a24; border-bottom:none; width:110px;}
+    section.part{padding:14px 0 0; break-inside:auto;}
+    .card{box-shadow:none; break-inside:avoid; padding:14px 16px; margin-bottom:12px;}
+    .feedback-line{font-size:12px; margin-top:6px;}
+    .qa, table.fill tr, .graph-box, .order-activity{break-inside:avoid;}
+    .order-activity{background:#fff; border:1px solid var(--line);}
+    .part-desc{margin:6px 0 12px; break-after:avoid;}
+    .part-head{break-after:avoid;}
+    section.part{break-inside:avoid;}
+    textarea{border:1px solid #bbb !important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">고등학교 2학년 · 생명과학 자기주도학습지</div>
+    <h1 class="title">체세포분열과 생식세포분열<br>― 과정의 순서를 맞추고, 변화의 원리를 정리하기</h1>
+    <p class="sub">그림을 보고 분열 과정의 순서를 스스로 맞춰 보고, 각 단계의 특징과 염색체 수 · DNA 양의 변화를 정리하는 학습지입니다. 영상 없이 이 페이지만으로 학습을 완성할 수 있도록 구성했어요.</p>
+    <div class="save-bar">
+      <button class="btn save" onclick="savePDF()">📄 내 답안을 PDF로 저장하기</button>
+      <span class="hintline">다 풀고 나서 누르면 한 개의 PDF 파일로 저장돼요. 캡처 여러 장 대신 이 파일 1개를 제출하세요.</span>
+    </div>
+    <div class="meta-row">
+      <div class="meta-chip">이름 <input type="text" id="stuName" placeholder="　　"></div>
+      <div class="meta-chip">학번 <input type="text" id="stuId" placeholder="　　"></div>
+      <div class="meta-chip">제출일 <input type="text" id="stuDate" placeholder="　　"></div>
+    </div>
+  </div>
+</header>
+
+<nav class="jumpnav"><div class="wrap">
+  <a href="#intro">① 들어가기</a>
+  <a href="#mitosis-order">② 체세포분열 순서</a>
+  <a href="#mitosis-stage">③ 체세포분열 특징</a>
+  <a href="#mitosis-change">④ 염색체·DNA 변화</a>
+  <a href="#meiosis-order">⑤ 생식세포분열 순서</a>
+  <a href="#meiosis-stage">⑥ 생식세포분열 특징</a>
+  <a href="#meiosis-change">⑦ 염색체·DNA 변화</a>
+  <a href="#diversity">⑧ 유전적 다양성</a>
+  <a href="#compare">⑨ 종합 비교</a>
+  <a href="#check">⑩ 마무리 점검</a>
+</div></nav>
+
+<div class="wrap">
+
+<section class="part" id="intro">
+  <div class="part-head"><span class="part-num">0</span><h2 class="part-title">들어가기 — 세포 주기 복습</h2></div>
+  <p class="part-desc">체세포분열과 생식세포분열은 모두 <b>세포 주기(cell cycle)</b>의 M기(분열기)에 해당하는 사건입니다. 두 분열을 비교하기 전에, 먼저 세포 주기의 흐름을 간단히 떠올려 봅시다.</p>
+
+  <div class="card">
+    <h3>세포 주기의 흐름</h3>
+    <p class="hint">간기(G₁ → S → G₂)와 분열기(M기)로 이루어지며, 일부 세포는 분열을 멈춘 G₀기에 머무르기도 합니다.</p>
+    <div class="graph-box">
+      <svg viewBox="0 0 760 150">
+        <circle cx="70" cy="75" r="46" fill="#e4ebdf" stroke="#5c7a52" stroke-width="2"></circle>
+        <text x="70" y="70" text-anchor="middle" font-size="13" font-weight="800" fill="#3a4d35">G₁기</text>
+        <text x="70" y="86" text-anchor="middle" font-size="10" fill="#5c7a52">생장 · 물질 합성</text>
+        <text x="130" y="79" font-size="18" fill="#c6bda4">→</text>
+        <circle cx="210" cy="75" r="46" fill="#e0ebf3" stroke="#3f74a0" stroke-width="2"></circle>
+        <text x="210" y="70" text-anchor="middle" font-size="13" font-weight="800" fill="#274a63">S기</text>
+        <text x="210" y="86" text-anchor="middle" font-size="10" fill="#3f74a0">DNA 복제 (2배)</text>
+        <text x="270" y="79" font-size="18" fill="#c6bda4">→</text>
+        <circle cx="350" cy="75" r="46" fill="#e4ebdf" stroke="#5c7a52" stroke-width="2"></circle>
+        <text x="350" y="70" text-anchor="middle" font-size="13" font-weight="800" fill="#3a4d35">G₂기</text>
+        <text x="350" y="86" text-anchor="middle" font-size="10" fill="#5c7a52">방추사 단백질 합성</text>
+        <text x="410" y="79" font-size="18" fill="#c6bda4">→</text>
+        <circle cx="490" cy="75" r="50" fill="#f6e4db" stroke="#bd5b3d" stroke-width="2.4"></circle>
+        <text x="490" y="68" text-anchor="middle" font-size="13" font-weight="800" fill="#7c3821">M기</text>
+        <text x="490" y="84" text-anchor="middle" font-size="10" fill="#bd5b3d">핵분열 + 세포질분열</text>
+        <text x="550" y="79" font-size="16" fill="#c6bda4">↺</text>
+        <circle cx="650" cy="75" r="40" fill="#f3f1ea" stroke="#9a8f74" stroke-width="2" stroke-dasharray="4 3"></circle>
+        <text x="650" y="70" text-anchor="middle" font-size="12" font-weight="800" fill="#6b6355">G₀기</text>
+        <text x="650" y="85" text-anchor="middle" font-size="9.5" fill="#6b6355">분열 정지 상태</text>
+      </svg>
+    </div>
+    <div class="note-box">신경세포, 근육세포처럼 더 이상 분열하지 않는 세포는 G₀기에 머물러 있습니다.</div>
+
+    <div class="qa">
+      <div class="q"><span class="qnum">Q</span>체세포분열과 생식세포분열은 세포 주기 중 어느 시기에 일어나는 사건일까요?</div>
+      <textarea class="ans" rows="1" placeholder="답을 입력하세요"></textarea>
+    </div>
+  </div>
+</section>
+
+<section class="part" id="mitosis-order">
+  <div class="part-head"><span class="part-num">1</span><h2 class="part-title">체세포분열 — 과정 순서 맞추기</h2></div>
+  <p class="part-desc">아래는 체세포분열 과정을 단계별로 나타낸 모식도입니다. 그림 속 핵막, 염색체, 방추사의 모습을 관찰하여 <b>간기 → 전기 → 중기 → 후기 → 말기 → 세포질분열</b>의 순서대로 아래 칸에 배치해 보세요. 그림을 클릭하면 크게 볼 수 있어요. (빨간색과 파란색은 상동 염색체를 구분하기 위한 색이에요.)</p>
+
+  <div class="card">
+    <h3>체세포분열 단계별 모식도 <span class="tag water">2n = 4인 동물세포</span></h3>
+    <p class="hint">아래 보관함의 그림을 순서대로 클릭하면 아래 칸에 차례로 놓입니다. 잘못 놓았다면 칸을 다시 클릭해 보관함으로 되돌리세요. (⤢ 버튼: 확대)</p>
+    <div class="order-activity" id="mitB"></div>
+  </div>
+
+  <div class="note-box">
+    <b>관찰 Tip.</b> 핵막·인이 뚜렷하면 간기, 염색체가 굵고 진하게 뭉쳐 세포 중앙(적도판)에 한 줄로 늘어서 있으면 중기, 염색체(염색분체)가 양쪽 끝으로 갈라져 이동 중이면 후기입니다.
+  </div>
+</section>
+
+<section class="part" id="mitosis-stage">
+  <div class="part-head"><span class="part-num clay">2</span><h2 class="part-title">체세포분열 — 단계별 특징 정리</h2></div>
+  <p class="part-desc">방금 순서를 맞춘 그림과 교과서 내용을 떠올리며, 각 단계에서 나타나는 특징적인 모습을 스스로 정리해 보세요.</p>
+
+  <div class="card">
+    <h3>체세포분열(핵분열) 단계별 특징</h3>
+    <table class="fill">
+      <tr><th style="width:80px;">단계</th><th>핵·염색체의 특징적인 모습을 적어 보세요</th></tr>
+      <tr><td class="stage">간기</td><td><textarea placeholder="핵막, 인, 염색사의 상태는? DNA는 어떻게 되나요?"></textarea></td></tr>
+      <tr><td class="stage">전기</td><td><textarea placeholder="핵막·인, 염색사, 방추사, 중심체의 변화는?"></textarea></td></tr>
+      <tr><td class="stage">중기</td><td><textarea placeholder="염색체는 세포의 어느 위치에 배열하나요?"></textarea></td></tr>
+      <tr><td class="stage">후기</td><td><textarea placeholder="염색분체는 어떻게 되나요? 방추사의 역할은?"></textarea></td></tr>
+      <tr><td class="stage">말기</td><td><textarea placeholder="염색체·핵막·인은 어떻게 변하나요?"></textarea></td></tr>
+      <tr><td class="stage">세포질분열</td><td><textarea placeholder="동물세포와 식물세포의 세포질분열 방식 차이는?"></textarea></td></tr>
+    </table>
+
+    <details class="answer">
+      <summary>모범답안 확인하기</summary>
+      <div class="answer-body">
+        <p><b>간기</b> — 핵막과 인이 뚜렷하게 관찰되고, 염색사가 핵 속에 가늘고 풀어진 상태로 퍼져 있다. S기에 DNA가 복제되어 양이 2배가 된다.</p>
+        <p><b>전기</b> — 핵막과 인이 사라지고, 풀어져 있던 염색사가 굵고 짧게 응축되어 염색체가 된다. 중심체에서 방추사가 형성되어 염색체의 동원체에 결합한다.</p>
+        <p><b>중기</b> — 응축된 염색체가 세포 중앙의 적도판에 한 줄로 배열한다. 염색체의 모양이 가장 뚜렷해 관찰하기 가장 좋은 시기(핵형 분석에 활용)이다.</p>
+        <p><b>후기</b> — 방추사가 짧아지며 당겨져 각 염색체를 이루던 염색분체가 분리되어 세포 양극으로 이동한다. → 염색체 수는 변화 없고, DNA 양은 절반으로 줄어든다.</p>
+        <p><b>말기</b> — 양극에 도달한 염색체가 다시 풀어져 염색사로 되돌아가고, 핵막과 인이 다시 나타나 2개의 딸핵이 만들어진다.</p>
+        <p><b>세포질분열</b> — 동물세포는 세포막이 바깥에서 안으로 잘록하게 함입되며 나뉘고, 식물세포는 세포 중앙에 세포판이 생겨 바깥쪽으로 자라며 나뉜다.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section class="part" id="mitosis-change">
+  <div class="part-head"><span class="part-num clay">3</span><h2 class="part-title">체세포분열 — 염색체 수와 DNA 양의 변화</h2></div>
+  <p class="part-desc">아래 그래프는 체세포분열이 진행되는 동안 세포 1개가 가진 DNA 상대량의 변화를 나타낸 것입니다.</p>
+
+  <div class="card">
+    <h3>DNA 양 변화 그래프</h3>
+    <div class="graph-box">
+      <svg viewBox="0 0 620 230" id="mitGraph">
+        <!-- axes -->
+        <line x1="70" y1="20" x2="70" y2="190" stroke="#2e2a24" stroke-width="1.6"></line>
+        <line x1="70" y1="190" x2="590" y2="190" stroke="#2e2a24" stroke-width="1.6"></line>
+        <text x="30" y="40" font-size="12" fill="#2e2a24">4 -</text>
+        <text x="30" y="108" font-size="12" fill="#2e2a24">2 -</text>
+        <text x="30" y="193" font-size="12" fill="#2e2a24">0 -</text>
+        <text x="18" y="110" font-size="11" fill="#6b6355" transform="rotate(-90 18 110)">DNA 상대량</text>
+        <!-- gridlines -->
+        <line x1="70" y1="37" x2="590" y2="37" stroke="#e4dcc6" stroke-dasharray="3 3"></line>
+        <line x1="70" y1="105" x2="590" y2="105" stroke="#e4dcc6" stroke-dasharray="3 3"></line>
+        <!-- dashed phase separators -->
+        <line x1="190" y1="20" x2="190" y2="190" stroke="#c6bda4" stroke-dasharray="4 3"></line>
+        <line x1="330" y1="20" x2="330" y2="190" stroke="#c6bda4" stroke-dasharray="4 3"></line>
+        <line x1="400" y1="20" x2="400" y2="190" stroke="#c6bda4" stroke-dasharray="4 3"></line>
+        <!-- data line: G1(2) flat 70-190, S rise 190-330 to 37, G2 flat 330-400, M flat 400-520, drop 520-540, flat 540-590 at 2 -->
+        <polyline points="70,105 190,105 330,37 400,37 520,37 540,105 590,105" fill="none" stroke="#bd5b3d" stroke-width="3.2" stroke-linejoin="round"></polyline>
+        <!-- labels -->
+        <text x="130" y="210" font-size="13" text-anchor="middle" font-weight="700" fill="#5c7a52">G₁기</text>
+        <text x="260" y="210" font-size="13" text-anchor="middle" font-weight="700" fill="#3f74a0">S기</text>
+        <text x="365" y="210" font-size="13" text-anchor="middle" font-weight="700" fill="#5c7a52">G₂기</text>
+        <text x="490" y="210" font-size="13" text-anchor="middle" font-weight="700" fill="#bd5b3d">M기(분열기)</text>
+      </svg>
+    </div>
+    <div class="graph-caption">간기(G₁→S→G₂)와 분열기(M기) 동안의 DNA 상대량 변화</div>
+
+    <div class="qa" style="margin-top:18px;">
+      <div class="q"><span class="qnum">1</span>DNA 양이 2배로 증가하는 시기는 언제인가요?</div>
+      <textarea class="ans" rows="1" placeholder="답을 입력하세요"></textarea>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="qnum">2</span>분열기(M기)를 거치면서 DNA 양에는 어떤 변화가 일어나나요? 그 이유도 함께 써 보세요.</div>
+      <textarea class="ans" rows="1" placeholder="답을 입력하세요"></textarea>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="qnum">3</span>체세포분열 전과 후, 딸세포의 염색체 수는 모세포와 비교하여 어떻게 달라지나요? (2n 표기를 사용해 답해 보세요)</div>
+      <textarea class="ans" rows="1" placeholder="답을 입력하세요"></textarea>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="qnum">4</span>후기에 염색분체가 분리되어도 염색체의 '수'는 변하지 않는 이유는 무엇일까요?</div>
+      <textarea class="ans" rows="1" placeholder="답을 입력하세요"></textarea>
+    </div>
+
+    <details class="answer">
+      <summary>모범답안 확인하기</summary>
+      <div class="answer-body">
+        <p>1. DNA 복제가 일어나는 <b>S기</b>에 DNA 양이 2배로 증가한다.</p>
+        <p>2. M기 동안 DNA 양에는 전체적인 변화가 없다. 후기에 염색분체가 분리되어 두 딸세포로 나뉘어 들어가므로, 분열이 끝나면 딸세포 1개가 가진 DNA 양은 모세포(G₁기)와 같아진다.</p>
+        <p>3. 염색체 수는 변화가 없다. 모세포가 2n이면 딸세포도 2n으로, 체세포분열 전후 염색체 수는 동일하게 유지된다.</p>
+        <p>4. 분리되어 양극으로 이동하는 염색분체 하나하나가 새로운 '염색체 1개'로 불리기 때문이다. 염색체 수는 '동원체의 수'로 세므로, 염색분체가 둘로 갈라지면서 염색체 수는 2배로 늘어나는 것처럼 보이지만 이는 각각 독립된 딸세포로 나뉘어 들어가므로 딸세포 하나하나의 염색체 수는 모세포와 같다.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section class="part" id="meiosis-order">
+  <div class="part-head"><span class="part-num water">4</span><h2 class="part-title">생식세포분열(감수분열) — 과정 순서 맞추기</h2></div>
+  <p class="part-desc">감수분열은 <b>연속된 두 번의 분열(감수 1분열 → 감수 2분열)</b>로 이루어집니다. 아래 그림을 보고 각 분열의 단계를 순서대로 배치해 보세요.</p>
+
+  <div class="card">
+    <h3>감수 1분열 <span class="tag">상동 염색체의 분리, 2n → n</span></h3>
+    <p class="hint">상동 염색체가 접합하여 2가 염색체를 형성하고(교차 발생), 이 상동 염색체끼리 분리되는 과정입니다.</p>
+    <div class="order-activity" id="meiA"></div>
+  </div>
+
+  <div class="card">
+    <h3>감수 2분열 <span class="tag">염색 분체의 분리, n → n</span></h3>
+    <p class="hint">감수 1분열 직후, DNA 복제(간기) 없이 바로 이어서 일어납니다. 체세포분열과 매우 비슷한 모습이에요.</p>
+    <div class="order-activity" id="meiB"></div>
+  </div>
+
+  <div class="note-box">
+    <b>참고.</b> 감수 1분열의 전기에는 상동 염색체가 접합하여 <b>2가 염색체</b>를 형성하며, 이때 염색 분체 일부가 서로 교환되는 <b>교차</b>가 일어나기도 합니다.
+  </div>
+</section>
+
+<section class="part" id="meiosis-stage">
+  <div class="part-head"><span class="part-num water">5</span><h2 class="part-title">생식세포분열 — 단계별 특징 정리</h2></div>
+
+  <div class="card">
+    <h3>감수 1분열 · 감수 2분열 단계별 특징</h3>
+    <table class="fill">
+      <tr><th style="width:110px;">단계</th><th>특징적인 모습을 적어 보세요</th></tr>
+      <tr><td class="stage">1분열 전기</td><td><textarea placeholder="상동 염색체는 어떻게 되나요? 2가 염색체란?"></textarea></td></tr>
+      <tr><td class="stage">1분열 중기</td><td><textarea placeholder="2가 염색체는 세포의 어디에 배열하나요?"></textarea></td></tr>
+      <tr><td class="stage">1분열 후기</td><td><textarea placeholder="무엇이 분리되어 이동하나요? 염색체 수는?"></textarea></td></tr>
+      <tr><td class="stage">1분열 말기</td><td><textarea placeholder="딸핵의 염색체 수(핵상)는 모세포와 비교해 어떤가요?"></textarea></td></tr>
+      <tr><td class="stage">2분열 전기</td><td><textarea placeholder="1분열이 끝난 직후 바로 진행되나요? DNA 복제는?"></textarea></td></tr>
+      <tr><td class="stage">2분열 중기~말기</td><td><textarea placeholder="체세포분열과 비교했을 때 비슷한 점은?"></textarea></td></tr>
+    </table>
+
+    <details class="answer">
+      <summary>모범답안 확인하기</summary>
+      <div class="answer-body">
+        <p><b>1분열 전기</b> — 상동 염색체끼리 서로 접합(=짝짓기)하여 <b>2가 염색체</b>를 형성한다. 이 과정에서 염색 분체의 일부가 교환되는 <b>교차</b>가 일어날 수 있다.</p>
+        <p><b>1분열 중기</b> — 2가 염색체가 세포 중앙(적도판)에 배열한다.</p>
+        <p><b>1분열 후기</b> — 2가 염색체를 이루던 <b>상동 염색체가 분리</b>되어 양극으로 이동한다. → 염색체 수가 절반(2n → n)으로 줄고, DNA 양도 절반으로 줄어든다.</p>
+        <p><b>1분열 말기</b> — 핵상이 n인 두 개의 딸핵이 만들어진다. 이때 두 딸핵의 대립유전자 구성은 서로 다를 수 있다.</p>
+        <p><b>2분열 전기</b> — 감수 1분열 직후 DNA 복제(간기) 없이 곧바로 시작된다.</p>
+        <p><b>2분열 중기~말기</b> — 염색 분체가 분리되는 모습이 체세포분열과 매우 비슷하다. 염색체 수는 변화가 없고(n → n), DNA 양만 절반으로 줄어든다. 말기 이후 생성된 두 딸핵은 대립유전자 구성이 서로 같다.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section class="part" id="meiosis-change">
+  <div class="part-head"><span class="part-num water">6</span><h2 class="part-title">생식세포분열 — 염색체 수와 DNA 양의 변화</h2></div>
+
+  <div class="card">
+    <h3>DNA 양 변화 그래프</h3>
+    <div class="graph-box">
+      <svg viewBox="0 0 760 230" id="meiGraph">
+        <line x1="70" y1="20" x2="70" y2="190" stroke="#2e2a24" stroke-width="1.6"></line>
+        <line x1="70" y1="190" x2="730" y2="190" stroke="#2e2a24" stroke-width="1.6"></line>
+        <text x="30" y="40" font-size="12" fill="#2e2a24">2 -</text>
+        <text x="30" y="108" font-size="12" fill="#2e2a24">1 -</text>
+        <text x="20" y="152" font-size="11" fill="#2e2a24">0.5 -</text>
+        <text x="30" y="193" font-size="12" fill="#2e2a24">0 -</text>
+        <line x1="70" y1="37" x2="730" y2="37" stroke="#e4dcc6" stroke-dasharray="3 3"></line>
+        <line x1="70" y1="105" x2="730" y2="105" stroke="#e4dcc6" stroke-dasharray="3 3"></line>
+        <line x1="70" y1="149" x2="730" y2="149" stroke="#e4dcc6" stroke-dasharray="3 3"></line>
+        <line x1="190" y1="20" x2="190" y2="190" stroke="#c6bda4" stroke-dasharray="4 3"></line>
+        <line x1="330" y1="20" x2="330" y2="190" stroke="#c6bda4" stroke-dasharray="4 3"></line>
+        <line x1="470" y1="20" x2="470" y2="190" stroke="#c6bda4" stroke-dasharray="4 3"></line>
+        <line x1="600" y1="20" x2="600" y2="190" stroke="#c6bda4" stroke-dasharray="4 3"></line>
+        <!-- G1(1) flat70-190, S rise190-330 to37(=2), G2+meiosisI flat330-470(=2), drop470-490to105(=1), flat490-600(=1), drop600-620to149(=0.5), flat620-730 -->
+        <polyline points="70,105 190,105 330,37 470,37 490,105 600,105 620,149 730,149" fill="none" stroke="#3f74a0" stroke-width="3.2" stroke-linejoin="round"></polyline>
+        <text x="130" y="210" font-size="12.5" text-anchor="middle" font-weight="700" fill="#5c7a52">G₁기</text>
+        <text x="260" y="210" font-size="12.5" text-anchor="middle" font-weight="700" fill="#3f74a0">S기</text>
+        <text x="400" y="210" font-size="12.5" text-anchor="middle" font-weight="700" fill="#5c7a52">G₂기+감수1분열</text>
+        <text x="555" y="210" font-size="12.5" text-anchor="middle" font-weight="700" fill="#bd5b3d">감수2분열</text>
+        <text x="675" y="210" font-size="11.5" text-anchor="middle" font-weight="700" fill="#916d1f">생식세포</text>
+      </svg>
+    </div>
+    <div class="graph-caption">간기부터 생식세포 형성까지 핵 1개당 DNA 상대량 변화</div>
+
+    <div class="qa" style="margin-top:18px;">
+      <div class="q"><span class="qnum">1</span>감수 1분열이 끝났을 때와 감수 2분열이 끝났을 때, DNA 양은 각각 모세포(G₁기)의 몇 배인가요?</div>
+      <textarea class="ans" rows="1" placeholder="답을 입력하세요"></textarea>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="qnum">2</span>감수분열 결과 하나의 모세포로부터 몇 개의 딸세포(생식세포)가 만들어지나요?</div>
+      <textarea class="ans" rows="1" placeholder="답을 입력하세요"></textarea>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="qnum">3</span>감수분열로 만들어진 생식세포의 염색체 수와 DNA 양은 모세포와 비교하여 어떤 관계인가요?</div>
+      <textarea class="ans" rows="1" placeholder="답을 입력하세요"></textarea>
+    </div>
+
+    <details class="answer">
+      <summary>모범답안 확인하기</summary>
+      <div class="answer-body">
+        <p>1. 감수 1분열 말기 DNA 양은 모세포(G₁기)의 1배, 감수 2분열 말기(생식세포) DNA 양은 모세포의 0.5배이다. (S기에 2배로 늘어난 뒤, 1분열과 2분열에서 각각 절반씩 줄어들기 때문)</p>
+        <p>2. 하나의 모세포로부터 4개의 딸세포(생식세포)가 만들어진다.</p>
+        <p>3. 생식세포의 염색체 수와 DNA 양은 모두 모세포의 절반(½)이다. 그래서 '감수(減數) 분열'이라고 부른다.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section class="part" id="diversity">
+  <div class="part-head"><span class="part-num water">7</span><h2 class="part-title">감수분열과 유전적 다양성</h2></div>
+  <p class="part-desc">감수분열 과정에서는 자손에게 유전적 다양성을 만들어주는 두 가지 중요한 사건이 일어납니다.</p>
+
+  <div class="card">
+    <div class="two-col">
+      <div>
+        <h3>(1) 상동 염색체의 무작위 배열·분리</h3>
+        <p style="font-size:13.5px;">감수 1분열 중기에 2가 염색체가 세포 중앙에 배열될 때, 아버지 쪽 염색체와 어머니 쪽 염색체가 어느 쪽을 향할지는 <b>무작위</b>로 결정됩니다. <i>x</i>쌍의 상동 염색체를 가진 생물(2n = 2x)은 서로 다른 2<sup>x</sup>가지 생식세포를 만들 수 있습니다.</p>
+      </div>
+      <div>
+        <h3>(2) 교차</h3>
+        <p style="font-size:13.5px;">감수 1분열 전기에 2가 염색체가 형성될 때, 상동 염색체 사이에서 염색 분체의 일부가 서로 교환되는 현상입니다. 교차가 일어나면 염색체 내 유전자 조합이 더 다양해집니다.</p>
+      </div>
+    </div>
+
+    <div class="qa" style="margin-top:14px;">
+      <div class="q"><span class="qnum">Q</span>사람은 2n = 46(23쌍)입니다. 상동 염색체의 무작위 배열만을 고려할 때, 사람이 만들 수 있는 생식세포의 종류는 몇 가지인가요? (식으로 표현해 보세요)</div>
+      <textarea class="ans" rows="1" placeholder="답을 입력하세요"></textarea>
+    </div>
+    <details class="answer">
+      <summary>모범답안 확인하기</summary>
+      <div class="answer-body"><p>2²³ ≈ 약 800만 가지. (여기에 교차까지 고려하면 실제 생식세포의 다양성은 훨씬 더 커진다.)</p></div>
+    </details>
+  </div>
+</section>
+
+<section class="part" id="compare">
+  <div class="part-head"><span class="part-num gold">8</span><h2 class="part-title">종합 비교 — 체세포분열 vs 감수분열</h2></div>
+  <p class="part-desc">지금까지 학습한 내용을 바탕으로, 빈칸을 스스로 채워 표를 완성해 보세요.</p>
+
+  <div class="card">
+    <table class="fill">
+      <tr><th style="width:150px;">구분</th><th>체세포분열</th><th>감수분열</th></tr>
+      <tr><td class="stage">분열 횟수</td><td><textarea class="ans" rows="1"></textarea></td><td><textarea class="ans" rows="1"></textarea></td></tr>
+      <tr><td class="stage">염색체 수 변화<br>(핵상 변화)</td><td><textarea class="ans" rows="1" placeholder="예: 2n → ?"></textarea></td><td><textarea class="ans" rows="1" placeholder="예: 2n → ? → ?"></textarea></td></tr>
+      <tr><td class="stage">DNA 양</td><td><textarea class="ans" rows="1"></textarea></td><td><textarea class="ans" rows="1"></textarea></td></tr>
+      <tr><td class="stage">딸세포의 수</td><td><textarea class="ans" rows="1"></textarea></td><td><textarea class="ans" rows="1"></textarea></td></tr>
+      <tr><td class="stage">분열이 일어나는 장소</td><td><textarea class="ans" rows="1"></textarea></td><td><textarea class="ans" rows="1"></textarea></td></tr>
+    </table>
+
+    <details class="answer">
+      <summary>모범답안 확인하기</summary>
+      <div class="answer-body">
+        <table class="fill">
+          <tr><th style="width:150px;">구분</th><th>체세포분열</th><th>감수분열</th></tr>
+          <tr><td class="stage">분열 횟수</td><td>1회</td><td>연속 2회(감수 1분열, 감수 2분열)</td></tr>
+          <tr><td class="stage">염색체 수 변화</td><td>일정 (2n → 2n)</td><td>절반으로 감소 (2n → n → n)</td></tr>
+          <tr><td class="stage">DNA 양</td><td>일정</td><td>절반으로 줄어듦</td></tr>
+          <tr><td class="stage">딸세포의 수</td><td>2개</td><td>4개</td></tr>
+          <tr><td class="stage">분열 장소</td><td>온몸(체세포)</td><td>생식 기관(정소, 난소 등)</td></tr>
+        </table>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section class="part" id="check">
+  <div class="part-head"><span class="part-num gold">9</span><h2 class="part-title">마무리 점검</h2></div>
+  <p class="part-desc">학습한 내용을 종합적으로 점검해 봅시다.</p>
+
+  <div class="card">
+    <div class="qa">
+      <div class="q"><span class="qnum">1</span>체세포분열 후기와 감수 2분열 후기는 둘 다 '무엇'이 분리되는 공통점이 있나요? 반면, 감수 1분열 후기에는 무엇이 분리되나요?</div>
+      <textarea class="ans" rows="1" placeholder="답을 입력하세요"></textarea>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="qnum">2</span>어떤 동물의 체세포 1개에 염색체가 8개(2n = 8) 있다면, 이 동물의 생식세포 1개에 들어있는 염색체 수는 몇 개인가요?</div>
+      <textarea class="ans" rows="1" placeholder="답을 입력하세요"></textarea>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="qnum">3</span>감수분열의 의의를 염색체 수와 관련지어 한 문장으로 설명해 보세요. (세대를 거듭해도 염색체 수가 일정하게 유지되는 이유)</div>
+      <textarea class="ans" rows="1" placeholder="답을 입력하세요"></textarea>
+    </div>
+    <div class="qa">
+      <div class="q"><span class="qnum">4</span>감수분열이 체세포분열보다 자손에게 유전적 다양성을 더 많이 제공하는 까닭 두 가지를 써 보세요.</div>
+      <textarea class="ans" rows="1" placeholder="답을 입력하세요"></textarea>
+    </div>
+
+    <details class="answer">
+      <summary>모범답안 확인하기</summary>
+      <div class="answer-body">
+        <p>1. 공통적으로 <b>염색 분체</b>가 분리된다. 반면 감수 1분열 후기에는 <b>상동 염색체</b>가 분리된다.</p>
+        <p>2. 생식세포는 체세포의 절반인 n이므로, 염색체 4개를 가진다.</p>
+        <p>3. 감수분열로 염색체 수가 절반인(n) 생식세포가 만들어지고, 수정을 통해 암수 생식세포가 결합하면 다시 2n이 복원되므로, 세대를 거듭해도 자손의 염색체 수가 일정하게 유지된다.</p>
+        <p>4. ① 감수 1분열 중기에 상동 염색체가 무작위로 배열·분리되어 다양한 조합의 염색체를 가진 생식세포가 만들어진다. ② 감수 1분열 전기에 상동 염색체 사이에서 교차가 일어나 염색체 내 유전자 조합이 더욱 다양해진다.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+</div>
+
+<div class="wrap"><div class="footer-save">
+  <b>다 풀었나요?</b>
+  <p>아래 버튼을 누르고, 인쇄 창에서 <b>대상(프린터)을 'PDF로 저장'</b>으로 선택한 뒤 저장하세요.<br>이름·학번을 위에 적었다면 파일 이름에 자동으로 들어가요. 저장된 PDF 파일 1개를 과제로 제출합니다.</p>
+  <button class="btn clay" onclick="savePDF()">📄 내 답안을 PDF로 저장하기</button>
+</div></div>
+
+<footer class="endcap">
+  <span class="pin">✓</span><br><br>
+  수고했어요! 막히는 부분은 체크해두었다가 다음 시간에 함께 확인해요.
+</footer>
+
+<div id="lightbox"><span class="lb-close">×</span><img src="" alt=""></div>
+
+<script id="order-data" type="application/json">
+{"mitosisB": [{"id": "B0", "label": "간기", "tray_cap": "그림 1", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjEwMC4wIiBjeT0iNzUuMCIgcng9IjYwLjAiIHJ5PSI2MC4wIiBmaWxsPSJ1cmwoI2cpIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iMTAwLjAiIGN5PSI3NS4wIiByPSIzMiIgZmlsbD0iI2Y4ZjVmZSIgc3Ryb2tlPSIjOGQ4MmJkIiBzdHJva2Utd2lkdGg9IjEuMiIvPjxwYXRoIGQ9Ik04NS43IDY1LjkgUTEwNS4yIDU5LjQgMTE0LjMgNjkuOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuODUiLz48cGF0aCBkPSJNODcuMCA3NS4wIFE5Ny40IDg4LjAgMTEzLjAgNzguOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2Y2ZmM0IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuODUiLz48cGF0aCBkPSJNODguMyA4NS40IFExMDAuMCA3Mi40IDExMS43IDg2LjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Q5NTAzYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iLjg1Ii8+PHBhdGggZD0iTTk0LjggNTkuNCBRMTEzLjAgNjcuMiAxMDMuOSA4NC4xIiBmaWxsPSJub25lIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii44NSIvPjxjaXJjbGUgY3g9Ijk0LjAiIGN5PSI3MS4wIiByPSI1LjAiIGZpbGw9IiM4YTZiYjAiLz48Y2lyY2xlIGN4PSIxNDQuMCIgY3k9IjQ1LjAiIHI9IjIuNiIgZmlsbD0iIzdkNzJhZCIvPjxsaW5lIHgxPSIxNDcuNiIgeTE9IjQ1LjAiIHgyPSIxNTEuMCIgeTI9IjQ1LjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxNDYuNSIgeTE9IjQ3LjUiIHgyPSIxNDguOSIgeTI9IjQ5LjkiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxNDQuMCIgeTE9IjQ4LjYiIHgyPSIxNDQuMCIgeTI9IjUyLjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxNDEuNSIgeTE9IjQ3LjUiIHgyPSIxMzkuMSIgeTI9IjQ5LjkiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxNDAuNCIgeTE9IjQ1LjAiIHgyPSIxMzcuMCIgeTI9IjQ1LjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxNDEuNSIgeTE9IjQyLjUiIHgyPSIxMzkuMSIgeTI9IjQwLjEiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxNDQuMCIgeTE9IjQxLjQiIHgyPSIxNDQuMCIgeTI9IjM4LjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxNDYuNSIgeTE9IjQyLjUiIHgyPSIxNDguOSIgeTI9IjQwLjEiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjE0NC4wIiBjeT0iNTMuMCIgcj0iMi42IiBmaWxsPSIjN2Q3MmFkIi8+PGxpbmUgeDE9IjE0Ny42IiB5MT0iNTMuMCIgeDI9IjE1MS4wIiB5Mj0iNTMuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE0Ni41IiB5MT0iNTUuNSIgeDI9IjE0OC45IiB5Mj0iNTcuOSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE0NC4wIiB5MT0iNTYuNiIgeDI9IjE0NC4wIiB5Mj0iNjAuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE0MS41IiB5MT0iNTUuNSIgeDI9IjEzOS4xIiB5Mj0iNTcuOSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE0MC40IiB5MT0iNTMuMCIgeDI9IjEzNy4wIiB5Mj0iNTMuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE0MS41IiB5MT0iNTAuNSIgeDI9IjEzOS4xIiB5Mj0iNDguMSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE0NC4wIiB5MT0iNDkuNCIgeDI9IjE0NC4wIiB5Mj0iNDYuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE0Ni41IiB5MT0iNTAuNSIgeDI9IjE0OC45IiB5Mj0iNDguMSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+"}, {"id": "B1", "label": "전기", "tray_cap": "그림 2", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjEwMC4wIiBjeT0iNzUuMCIgcng9IjYwLjAiIHJ5PSI2MC4wIiBmaWxsPSJ1cmwoI2cpIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iNTMuMCIgY3k9Ijc1LjAiIHI9IjIuNiIgZmlsbD0iIzdkNzJhZCIvPjxsaW5lIHgxPSI1Ni42IiB5MT0iNzUuMCIgeDI9IjYwLjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNTUuNSIgeTE9Ijc3LjUiIHgyPSI1Ny45IiB5Mj0iNzkuOSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjUzLjAiIHkxPSI3OC42IiB4Mj0iNTMuMCIgeTI9IjgyLjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI1MC41IiB5MT0iNzcuNSIgeDI9IjQ4LjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNDkuNCIgeTE9Ijc1LjAiIHgyPSI0Ni4wIiB5Mj0iNzUuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjUwLjUiIHkxPSI3Mi41IiB4Mj0iNDguMSIgeTI9IjcwLjEiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI1My4wIiB5MT0iNzEuNCIgeDI9IjUzLjAiIHkyPSI2OC4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNTUuNSIgeTE9IjcyLjUiIHgyPSI1Ny45IiB5Mj0iNzAuMSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGNpcmNsZSBjeD0iMTQ3LjAiIGN5PSI3NS4wIiByPSIyLjYiIGZpbGw9IiM3ZDcyYWQiLz48bGluZSB4MT0iMTUwLjYiIHkxPSI3NS4wIiB4Mj0iMTU0LjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ5LjUiIHkxPSI3Ny41IiB4Mj0iMTUxLjkiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ3LjAiIHkxPSI3OC42IiB4Mj0iMTQ3LjAiIHkyPSI4Mi4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ0LjUiIHkxPSI3Ny41IiB4Mj0iMTQyLjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQzLjQiIHkxPSI3NS4wIiB4Mj0iMTQwLjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ0LjUiIHkxPSI3Mi41IiB4Mj0iMTQyLjEiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ3LjAiIHkxPSI3MS40IiB4Mj0iMTQ3LjAiIHkyPSI2OC4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ5LjUiIHkxPSI3Mi41IiB4Mj0iMTUxLjkiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNTMuMCIgeTE9Ijc1LjAiIHgyPSI3OC4wIiB5Mj0iNjEuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxsaW5lIHgxPSI1My4wIiB5MT0iNzUuMCIgeDI9Ijc4LjAiIHkyPSI4OS4wIiBzdHJva2U9IiNiNmFkZDgiIHN0cm9rZS13aWR0aD0iMC45Ii8+PGxpbmUgeDE9IjE0Ny4wIiB5MT0iNzUuMCIgeDI9IjEyMi4wIiB5Mj0iNjEuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxsaW5lIHgxPSIxNDcuMCIgeTE9Ijc1LjAiIHgyPSIxMjIuMCIgeTI9Ijg5LjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48Y2lyY2xlIGN4PSIxMDAuMCIgY3k9Ijc1LjAiIHI9IjM0IiBmaWxsPSIjZjhmNWZlIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS4yIiBzdHJva2UtZGFzaGFycmF5PSIzIDIuNSIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkyLjAgNjEuMCkgcm90YXRlKDM1KSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjMuNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIj48bGluZSB4MT0iLTcuNSIgeTE9Ii0xMi44IiB4Mj0iNy41IiB5Mj0iMTIuOCIvPjxsaW5lIHgxPSI3LjUiIHkxPSItMTIuOCIgeDI9Ii03LjUiIHkyPSIxMi44Ii8+PGNpcmNsZSByPSIxLjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0ibm9uZSIgb3BhY2l0eT0iLjc1Ii8+PC9nPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDExMC4wIDY3LjApIHJvdGF0ZSgtNDApIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMy40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItNy41IiB5MT0iLTEyLjgiIHgyPSI3LjUiIHkyPSIxMi44Ii8+PGxpbmUgeDE9IjcuNSIgeTE9Ii0xMi44IiB4Mj0iLTcuNSIgeTI9IjEyLjgiLz48Y2lyY2xlIHI9IjEuNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIiBvcGFjaXR5PSIuNzUiLz48L2c+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOTAuMCA4OS4wKSByb3RhdGUoNzApIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMy40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItNS4wIiB5MT0iLTguNSIgeDI9IjUuMCIgeTI9IjguNSIvPjxsaW5lIHgxPSI1LjAiIHkxPSItOC41IiB4Mj0iLTUuMCIgeTI9IjguNSIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMTAuMCA5MS4wKSByb3RhdGUoMTUpIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMy40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItNS4wIiB5MT0iLTguNSIgeDI9IjUuMCIgeTI9IjguNSIvPjxsaW5lIHgxPSI1LjAiIHkxPSItOC41IiB4Mj0iLTUuMCIgeTI9IjguNSIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48L3N2Zz4="}, {"id": "B2", "label": "중기", "tray_cap": "그림 3", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjEwMC4wIiBjeT0iNzUuMCIgcng9IjYwLjAiIHJ5PSI2MC4wIiBmaWxsPSJ1cmwoI2cpIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iNTAuMCIgY3k9Ijc1LjAiIHI9IjIuNiIgZmlsbD0iIzdkNzJhZCIvPjxsaW5lIHgxPSI1My42IiB5MT0iNzUuMCIgeDI9IjU3LjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNTIuNSIgeTE9Ijc3LjUiIHgyPSI1NC45IiB5Mj0iNzkuOSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjUwLjAiIHkxPSI3OC42IiB4Mj0iNTAuMCIgeTI9IjgyLjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI0Ny41IiB5MT0iNzcuNSIgeDI9IjQ1LjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNDYuNCIgeTE9Ijc1LjAiIHgyPSI0My4wIiB5Mj0iNzUuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjQ3LjUiIHkxPSI3Mi41IiB4Mj0iNDUuMSIgeTI9IjcwLjEiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI1MC4wIiB5MT0iNzEuNCIgeDI9IjUwLjAiIHkyPSI2OC4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNTIuNSIgeTE9IjcyLjUiIHgyPSI1NC45IiB5Mj0iNzAuMSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGNpcmNsZSBjeD0iMTUwLjAiIGN5PSI3NS4wIiByPSIyLjYiIGZpbGw9IiM3ZDcyYWQiLz48bGluZSB4MT0iMTUzLjYiIHkxPSI3NS4wIiB4Mj0iMTU3LjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTUyLjUiIHkxPSI3Ny41IiB4Mj0iMTU0LjkiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTUwLjAiIHkxPSI3OC42IiB4Mj0iMTUwLjAiIHkyPSI4Mi4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ3LjUiIHkxPSI3Ny41IiB4Mj0iMTQ1LjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ2LjQiIHkxPSI3NS4wIiB4Mj0iMTQzLjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ3LjUiIHkxPSI3Mi41IiB4Mj0iMTQ1LjEiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTUwLjAiIHkxPSI3MS40IiB4Mj0iMTUwLjAiIHkyPSI2OC4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTUyLjUiIHkxPSI3Mi41IiB4Mj0iMTU0LjkiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNTAuMCIgeTE9Ijc1LjAiIHgyPSIxMDAuMCIgeTI9IjQzLjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48bGluZSB4MT0iMTUwLjAiIHkxPSI3NS4wIiB4Mj0iMTAwLjAiIHkyPSI0My4wIiBzdHJva2U9IiNiNmFkZDgiIHN0cm9rZS13aWR0aD0iMC45Ii8+PGxpbmUgeDE9IjUwLjAiIHkxPSI3NS4wIiB4Mj0iMTAwLjAiIHkyPSI2NS4wIiBzdHJva2U9IiNiNmFkZDgiIHN0cm9rZS13aWR0aD0iMC45Ii8+PGxpbmUgeDE9IjE1MC4wIiB5MT0iNzUuMCIgeDI9IjEwMC4wIiB5Mj0iNjUuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxsaW5lIHgxPSI1MC4wIiB5MT0iNzUuMCIgeDI9IjEwMC4wIiB5Mj0iODcuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxsaW5lIHgxPSIxNTAuMCIgeTE9Ijc1LjAiIHgyPSIxMDAuMCIgeTI9Ijg3LjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48bGluZSB4MT0iNTAuMCIgeTE9Ijc1LjAiIHgyPSIxMDAuMCIgeTI9IjEwOC4wIiBzdHJva2U9IiNiNmFkZDgiIHN0cm9rZS13aWR0aD0iMC45Ii8+PGxpbmUgeDE9IjE1MC4wIiB5MT0iNzUuMCIgeDI9IjEwMC4wIiB5Mj0iMTA4LjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMDAuMCA0My4wKSByb3RhdGUoOTApIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMy4yIiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItNi44IiB5MT0iLTExLjUiIHgyPSI2LjgiIHkyPSIxMS41Ii8+PGxpbmUgeDE9IjYuOCIgeTE9Ii0xMS41IiB4Mj0iLTYuOCIgeTI9IjExLjUiLz48Y2lyY2xlIHI9IjEuNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIiBvcGFjaXR5PSIuNzUiLz48L2c+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTAwLjAgNjUuMCkgcm90YXRlKDkwKSIgc3Ryb2tlPSIjM2Y2ZmM0IiBzdHJva2Utd2lkdGg9IjMuMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIj48bGluZSB4MT0iLTQuNSIgeTE9Ii03LjYiIHgyPSI0LjUiIHkyPSI3LjYiLz48bGluZSB4MT0iNC41IiB5MT0iLTcuNiIgeDI9Ii00LjUiIHkyPSI3LjYiLz48Y2lyY2xlIHI9IjEuNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIiBvcGFjaXR5PSIuNzUiLz48L2c+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTAwLjAgODcuMCkgcm90YXRlKDkwKSIgc3Ryb2tlPSIjM2Y2ZmM0IiBzdHJva2Utd2lkdGg9IjMuMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIj48bGluZSB4MT0iLTYuOCIgeTE9Ii0xMS41IiB4Mj0iNi44IiB5Mj0iMTEuNSIvPjxsaW5lIHgxPSI2LjgiIHkxPSItMTEuNSIgeDI9Ii02LjgiIHkyPSIxMS41Ii8+PGNpcmNsZSByPSIxLjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0ibm9uZSIgb3BhY2l0eT0iLjc1Ii8+PC9nPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEwMC4wIDEwOC4wKSByb3RhdGUoOTApIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMy4yIiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItNC41IiB5MT0iLTcuNiIgeDI9IjQuNSIgeTI9IjcuNiIvPjxsaW5lIHgxPSI0LjUiIHkxPSItNy42IiB4Mj0iLTQuNSIgeTI9IjcuNiIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48L3N2Zz4="}, {"id": "B3", "label": "후기", "tray_cap": "그림 4", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjEwMC4wIiBjeT0iNzUuMCIgcng9IjY0LjAiIHJ5PSI1NC4wIiBmaWxsPSJ1cmwoI2cpIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iNDYuMCIgY3k9Ijc1LjAiIHI9IjIuNiIgZmlsbD0iIzdkNzJhZCIvPjxsaW5lIHgxPSI0OS42IiB5MT0iNzUuMCIgeDI9IjUzLjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNDguNSIgeTE9Ijc3LjUiIHgyPSI1MC45IiB5Mj0iNzkuOSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjQ2LjAiIHkxPSI3OC42IiB4Mj0iNDYuMCIgeTI9IjgyLjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI0My41IiB5MT0iNzcuNSIgeDI9IjQxLjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNDIuNCIgeTE9Ijc1LjAiIHgyPSIzOS4wIiB5Mj0iNzUuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjQzLjUiIHkxPSI3Mi41IiB4Mj0iNDEuMSIgeTI9IjcwLjEiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI0Ni4wIiB5MT0iNzEuNCIgeDI9IjQ2LjAiIHkyPSI2OC4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNDguNSIgeTE9IjcyLjUiIHgyPSI1MC45IiB5Mj0iNzAuMSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGNpcmNsZSBjeD0iMTU0LjAiIGN5PSI3NS4wIiByPSIyLjYiIGZpbGw9IiM3ZDcyYWQiLz48bGluZSB4MT0iMTU3LjYiIHkxPSI3NS4wIiB4Mj0iMTYxLjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTU2LjUiIHkxPSI3Ny41IiB4Mj0iMTU4LjkiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTU0LjAiIHkxPSI3OC42IiB4Mj0iMTU0LjAiIHkyPSI4Mi4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTUxLjUiIHkxPSI3Ny41IiB4Mj0iMTQ5LjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTUwLjQiIHkxPSI3NS4wIiB4Mj0iMTQ3LjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTUxLjUiIHkxPSI3Mi41IiB4Mj0iMTQ5LjEiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTU0LjAiIHkxPSI3MS40IiB4Mj0iMTU0LjAiIHkyPSI2OC4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTU2LjUiIHkxPSI3Mi41IiB4Mj0iMTU4LjkiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNDYuMCIgeTE9Ijc1LjAiIHgyPSI3MC4wIiB5Mj0iNDMuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxsaW5lIHgxPSIxNTQuMCIgeTE9Ijc1LjAiIHgyPSIxMzAuMCIgeTI9IjQzLjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48bGluZSB4MT0iNDYuMCIgeTE9Ijc1LjAiIHgyPSI3MC4wIiB5Mj0iNjQuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxsaW5lIHgxPSIxNTQuMCIgeTE9Ijc1LjAiIHgyPSIxMzAuMCIgeTI9IjY0LjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48bGluZSB4MT0iNDYuMCIgeTE9Ijc1LjAiIHgyPSI3MC4wIiB5Mj0iODYuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxsaW5lIHgxPSIxNTQuMCIgeTE9Ijc1LjAiIHgyPSIxMzAuMCIgeTI9Ijg2LjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48bGluZSB4MT0iNDYuMCIgeTE9Ijc1LjAiIHgyPSI3MC4wIiB5Mj0iMTA3LjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48bGluZSB4MT0iMTU0LjAiIHkxPSI3NS4wIiB4Mj0iMTMwLjAiIHkyPSIxMDcuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxwb2x5bGluZSBwb2ludHM9IjgxLjUsMzQuMiA3MC4wLDQzLjAgODEuNSw1MS44IiBmaWxsPSJub25lIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMy4yIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cG9seWxpbmUgcG9pbnRzPSIxMTguNSwzNC4yIDEzMC4wLDQzLjAgMTE4LjUsNTEuOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjMuMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBvbHlsaW5lIHBvaW50cz0iNzcuNyw1OC4xIDcwLjAsNjQuMCA3Ny43LDY5LjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNmNmZjNCIgc3Ryb2tlLXdpZHRoPSIzLjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwb2x5bGluZSBwb2ludHM9IjEyMi4zLDU4LjEgMTMwLjAsNjQuMCAxMjIuMyw2OS44IiBmaWxsPSJub25lIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMy4yIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cG9seWxpbmUgcG9pbnRzPSI4MS41LDc3LjIgNzAuMCw4Ni4wIDgxLjUsOTQuOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2Y2ZmM0IiBzdHJva2Utd2lkdGg9IjMuMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBvbHlsaW5lIHBvaW50cz0iMTE4LjUsNzcuMiAxMzAuMCw4Ni4wIDExOC41LDk0LjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNmNmZjNCIgc3Ryb2tlLXdpZHRoPSIzLjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwb2x5bGluZSBwb2ludHM9Ijc3LjcsMTAxLjIgNzAuMCwxMDcuMCA3Ny43LDExMi44IiBmaWxsPSJub25lIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMy4yIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cG9seWxpbmUgcG9pbnRzPSIxMjIuMywxMDEuMiAxMzAuMCwxMDcuMCAxMjIuMywxMTIuOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjMuMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+"}, {"id": "B4", "label": "말기", "tray_cap": "그림 5", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGNpcmNsZSBjeD0iNzAuMCIgY3k9Ijc1LjAiIHI9IjQ0IiBmaWxsPSIjZGNkMmYxIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iMTMwLjAiIGN5PSI3NS4wIiByPSI0NCIgZmlsbD0iI2RjZDJmMSIgc3Ryb2tlPSIjOGQ4MmJkIiBzdHJva2Utd2lkdGg9IjEuNiIvPjxjaXJjbGUgY3g9IjcwLjAiIGN5PSI3NS4wIiByPSI0MyIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjEzMC4wIiBjeT0iNzUuMCIgcj0iNDMiIGZpbGw9InVybCgjZykiLz48Y2lyY2xlIGN4PSI2Mi4wIiBjeT0iNzUuMCIgcj0iMjMiIGZpbGw9IiNmOGY1ZmUiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjIiIHN0cm9rZS1kYXNoYXJyYXk9IjMgMi41Ii8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTcuMCA2OS4wKSByb3RhdGUoMzApIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItMy41IiB5MT0iLTYuMCIgeDI9IjMuNSIgeTI9IjYuMCIvPjxsaW5lIHgxPSIzLjUiIHkxPSItNi4wIiB4Mj0iLTMuNSIgeTI9IjYuMCIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg2OS4wIDcyLjApIHJvdGF0ZSgtMzApIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItMy41IiB5MT0iLTYuMCIgeDI9IjMuNSIgeTI9IjYuMCIvPjxsaW5lIHgxPSIzLjUiIHkxPSItNi4wIiB4Mj0iLTMuNSIgeTI9IjYuMCIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg1OS4wIDg1LjApIHJvdGF0ZSg2MCkiIHN0cm9rZT0iI2Q5NTAzYSIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+PGxpbmUgeDE9Ii0yLjUiIHkxPSItNC4yIiB4Mj0iMi41IiB5Mj0iNC4yIi8+PGxpbmUgeDE9IjIuNSIgeTE9Ii00LjIiIHgyPSItMi41IiB5Mj0iNC4yIi8+PGNpcmNsZSByPSIxLjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0ibm9uZSIgb3BhY2l0eT0iLjc1Ii8+PC9nPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDcwLjAgODYuMCkgcm90YXRlKDEwKSIgc3Ryb2tlPSIjM2Y2ZmM0IiBzdHJva2Utd2lkdGg9IjIuNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIj48bGluZSB4MT0iLTIuNSIgeTE9Ii00LjIiIHgyPSIyLjUiIHkyPSI0LjIiLz48bGluZSB4MT0iMi41IiB5MT0iLTQuMiIgeDI9Ii0yLjUiIHkyPSI0LjIiLz48Y2lyY2xlIHI9IjEuNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIiBvcGFjaXR5PSIuNzUiLz48L2c+PGNpcmNsZSBjeD0iMTM4LjAiIGN5PSI3NS4wIiByPSIyMyIgZmlsbD0iI2Y4ZjVmZSIgc3Ryb2tlPSIjOGQ4MmJkIiBzdHJva2Utd2lkdGg9IjEuMiIgc3Ryb2tlLWRhc2hhcnJheT0iMyAyLjUiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMzMuMCA2OS4wKSByb3RhdGUoMzApIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItMy41IiB5MT0iLTYuMCIgeDI9IjMuNSIgeTI9IjYuMCIvPjxsaW5lIHgxPSIzLjUiIHkxPSItNi4wIiB4Mj0iLTMuNSIgeTI9IjYuMCIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNDUuMCA3Mi4wKSByb3RhdGUoLTMwKSIgc3Ryb2tlPSIjM2Y2ZmM0IiBzdHJva2Utd2lkdGg9IjIuNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIj48bGluZSB4MT0iLTMuNSIgeTE9Ii02LjAiIHgyPSIzLjUiIHkyPSI2LjAiLz48bGluZSB4MT0iMy41IiB5MT0iLTYuMCIgeDI9Ii0zLjUiIHkyPSI2LjAiLz48Y2lyY2xlIHI9IjEuNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIiBvcGFjaXR5PSIuNzUiLz48L2c+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTM1LjAgODUuMCkgcm90YXRlKDYwKSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjIuNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIj48bGluZSB4MT0iLTIuNSIgeTE9Ii00LjIiIHgyPSIyLjUiIHkyPSI0LjIiLz48bGluZSB4MT0iMi41IiB5MT0iLTQuMiIgeDI9Ii0yLjUiIHkyPSI0LjIiLz48Y2lyY2xlIHI9IjEuNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIiBvcGFjaXR5PSIuNzUiLz48L2c+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTQ2LjAgODYuMCkgcm90YXRlKDEwKSIgc3Ryb2tlPSIjM2Y2ZmM0IiBzdHJva2Utd2lkdGg9IjIuNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIj48bGluZSB4MT0iLTIuNSIgeTE9Ii00LjIiIHgyPSIyLjUiIHkyPSI0LjIiLz48bGluZSB4MT0iMi41IiB5MT0iLTQuMiIgeDI9Ii0yLjUiIHkyPSI0LjIiLz48Y2lyY2xlIHI9IjEuNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIiBvcGFjaXR5PSIuNzUiLz48L2c+PC9zdmc+"}, {"id": "B5", "label": "세포질분열", "tray_cap": "그림 6", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjU3LjAiIGN5PSI3NS4wIiByeD0iMzYuMCIgcnk9IjM2LjAiIGZpbGw9InVybCgjZykiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48Y2lyY2xlIGN4PSI1Ny4wIiBjeT0iNzUuMCIgcj0iMjAiIGZpbGw9IiNmOGY1ZmUiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz48cGF0aCBkPSJNNDguOCA2OS44IFE2MC4wIDY2LjAgNjUuMiA3Mi4wIiBmaWxsPSJub25lIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii44NSIvPjxwYXRoIGQ9Ik00OS41IDc1LjAgUTU1LjUgODIuNSA2NC41IDc3LjIiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNmNmZjNCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iLjg1Ii8+PHBhdGggZD0iTTUwLjIgODEuMCBRNTcuMCA3My41IDYzLjggODEuOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuODUiLz48cGF0aCBkPSJNNTQuMCA2Ni4wIFE2NC41IDcwLjUgNTkuMiA4MC4yIiBmaWxsPSJub25lIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii44NSIvPjxjaXJjbGUgY3g9IjU1LjAiIGN5PSI3My4wIiByPSIzLjIiIGZpbGw9IiM4YTZiYjAiLz48ZWxsaXBzZSBjeD0iMTQzLjAiIGN5PSI3NS4wIiByeD0iMzYuMCIgcnk9IjM2LjAiIGZpbGw9InVybCgjZykiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48Y2lyY2xlIGN4PSIxNDMuMCIgY3k9Ijc1LjAiIHI9IjIwIiBmaWxsPSIjZjhmNWZlIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS4yIi8+PHBhdGggZD0iTTEzNC44IDY5LjggUTE0Ni4wIDY2LjAgMTUxLjIgNzIuMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuODUiLz48cGF0aCBkPSJNMTM1LjUgNzUuMCBRMTQxLjUgODIuNSAxNTAuNSA3Ny4yIiBmaWxsPSJub25lIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii44NSIvPjxwYXRoIGQ9Ik0xMzYuMiA4MS4wIFExNDMuMCA3My41IDE0OS44IDgxLjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Q5NTAzYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iLjg1Ii8+PHBhdGggZD0iTTE0MC4wIDY2LjAgUTE1MC41IDcwLjUgMTQ1LjIgODAuMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2Y2ZmM0IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuODUiLz48Y2lyY2xlIGN4PSIxNDEuMCIgY3k9IjczLjAiIHI9IjMuMiIgZmlsbD0iIzhhNmJiMCIvPjwvc3ZnPg=="}], "meiosisI": [{"id": "M1_1", "label": "간기의 세포", "tray_cap": "그림 1", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjEwMC4wIiBjeT0iNzUuMCIgcng9IjYwLjAiIHJ5PSI2MC4wIiBmaWxsPSJ1cmwoI2cpIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iMTAwLjAiIGN5PSI3NS4wIiByPSIzMiIgZmlsbD0iI2Y4ZjVmZSIgc3Ryb2tlPSIjOGQ4MmJkIiBzdHJva2Utd2lkdGg9IjEuMiIvPjxwYXRoIGQ9Ik04NS43IDY1LjkgUTEwNS4yIDU5LjQgMTE0LjMgNjkuOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuODUiLz48cGF0aCBkPSJNODcuMCA3NS4wIFE5Ny40IDg4LjAgMTEzLjAgNzguOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2Y2ZmM0IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuODUiLz48cGF0aCBkPSJNODguMyA4NS40IFExMDAuMCA3Mi40IDExMS43IDg2LjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Q5NTAzYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iLjg1Ii8+PHBhdGggZD0iTTk0LjggNTkuNCBRMTEzLjAgNjcuMiAxMDMuOSA4NC4xIiBmaWxsPSJub25lIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii44NSIvPjxjaXJjbGUgY3g9Ijk0LjAiIGN5PSI3MS4wIiByPSI1LjAiIGZpbGw9IiM4YTZiYjAiLz48Y2lyY2xlIGN4PSIxNDQuMCIgY3k9IjQ1LjAiIHI9IjIuNiIgZmlsbD0iIzdkNzJhZCIvPjxsaW5lIHgxPSIxNDcuNiIgeTE9IjQ1LjAiIHgyPSIxNTEuMCIgeTI9IjQ1LjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxNDYuNSIgeTE9IjQ3LjUiIHgyPSIxNDguOSIgeTI9IjQ5LjkiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxNDQuMCIgeTE9IjQ4LjYiIHgyPSIxNDQuMCIgeTI9IjUyLjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxNDEuNSIgeTE9IjQ3LjUiIHgyPSIxMzkuMSIgeTI9IjQ5LjkiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxNDAuNCIgeTE9IjQ1LjAiIHgyPSIxMzcuMCIgeTI9IjQ1LjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxNDEuNSIgeTE9IjQyLjUiIHgyPSIxMzkuMSIgeTI9IjQwLjEiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxNDQuMCIgeTE9IjQxLjQiIHgyPSIxNDQuMCIgeTI9IjM4LjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxNDYuNSIgeTE9IjQyLjUiIHgyPSIxNDguOSIgeTI9IjQwLjEiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjE0NC4wIiBjeT0iNTMuMCIgcj0iMi42IiBmaWxsPSIjN2Q3MmFkIi8+PGxpbmUgeDE9IjE0Ny42IiB5MT0iNTMuMCIgeDI9IjE1MS4wIiB5Mj0iNTMuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE0Ni41IiB5MT0iNTUuNSIgeDI9IjE0OC45IiB5Mj0iNTcuOSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE0NC4wIiB5MT0iNTYuNiIgeDI9IjE0NC4wIiB5Mj0iNjAuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE0MS41IiB5MT0iNTUuNSIgeDI9IjEzOS4xIiB5Mj0iNTcuOSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE0MC40IiB5MT0iNTMuMCIgeDI9IjEzNy4wIiB5Mj0iNTMuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE0MS41IiB5MT0iNTAuNSIgeDI9IjEzOS4xIiB5Mj0iNDguMSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE0NC4wIiB5MT0iNDkuNCIgeDI9IjE0NC4wIiB5Mj0iNDYuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE0Ni41IiB5MT0iNTAuNSIgeDI9IjE0OC45IiB5Mj0iNDguMSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+"}, {"id": "M1_2", "label": "전기", "tray_cap": "그림 2", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjEwMC4wIiBjeT0iNzUuMCIgcng9IjYwLjAiIHJ5PSI2MC4wIiBmaWxsPSJ1cmwoI2cpIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iNTMuMCIgY3k9Ijc1LjAiIHI9IjIuNiIgZmlsbD0iIzdkNzJhZCIvPjxsaW5lIHgxPSI1Ni42IiB5MT0iNzUuMCIgeDI9IjYwLjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNTUuNSIgeTE9Ijc3LjUiIHgyPSI1Ny45IiB5Mj0iNzkuOSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjUzLjAiIHkxPSI3OC42IiB4Mj0iNTMuMCIgeTI9IjgyLjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI1MC41IiB5MT0iNzcuNSIgeDI9IjQ4LjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNDkuNCIgeTE9Ijc1LjAiIHgyPSI0Ni4wIiB5Mj0iNzUuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjUwLjUiIHkxPSI3Mi41IiB4Mj0iNDguMSIgeTI9IjcwLjEiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI1My4wIiB5MT0iNzEuNCIgeDI9IjUzLjAiIHkyPSI2OC4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNTUuNSIgeTE9IjcyLjUiIHgyPSI1Ny45IiB5Mj0iNzAuMSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGNpcmNsZSBjeD0iMTQ3LjAiIGN5PSI3NS4wIiByPSIyLjYiIGZpbGw9IiM3ZDcyYWQiLz48bGluZSB4MT0iMTUwLjYiIHkxPSI3NS4wIiB4Mj0iMTU0LjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ5LjUiIHkxPSI3Ny41IiB4Mj0iMTUxLjkiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ3LjAiIHkxPSI3OC42IiB4Mj0iMTQ3LjAiIHkyPSI4Mi4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ0LjUiIHkxPSI3Ny41IiB4Mj0iMTQyLjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQzLjQiIHkxPSI3NS4wIiB4Mj0iMTQwLjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ0LjUiIHkxPSI3Mi41IiB4Mj0iMTQyLjEiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ3LjAiIHkxPSI3MS40IiB4Mj0iMTQ3LjAiIHkyPSI2OC4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ5LjUiIHkxPSI3Mi41IiB4Mj0iMTUxLjkiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNTMuMCIgeTE9Ijc1LjAiIHgyPSI3Ni4wIiB5Mj0iNjMuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxsaW5lIHgxPSI1My4wIiB5MT0iNzUuMCIgeDI9Ijc2LjAiIHkyPSI4Ny4wIiBzdHJva2U9IiNiNmFkZDgiIHN0cm9rZS13aWR0aD0iMC45Ii8+PGxpbmUgeDE9IjE0Ny4wIiB5MT0iNzUuMCIgeDI9IjEyNC4wIiB5Mj0iNjMuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxsaW5lIHgxPSIxNDcuMCIgeTE9Ijc1LjAiIHgyPSIxMjQuMCIgeTI9Ijg3LjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48Y2lyY2xlIGN4PSIxMDAuMCIgY3k9Ijc1LjAiIHI9IjM0IiBmaWxsPSIjZjhmNWZlIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS4yIi8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOTIuMCA2My4wKSByb3RhdGUoMCkiIHN0cm9rZT0iI2Q5NTAzYSIgc3Ryb2tlLXdpZHRoPSIzLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+PGxpbmUgeDE9Ii02LjAiIHkxPSItMTAuMiIgeDI9IjYuMCIgeTI9IjEwLjIiLz48bGluZSB4MT0iNi4wIiB5MT0iLTEwLjIiIHgyPSItNi4wIiB5Mj0iMTAuMiIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMDYuMCA2My4wKSByb3RhdGUoMCkiIHN0cm9rZT0iIzNmNmZjNCIgc3Ryb2tlLXdpZHRoPSIzLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+PGxpbmUgeDE9Ii02LjAiIHkxPSItMTAuMiIgeDI9IjYuMCIgeTI9IjEwLjIiLz48bGluZSB4MT0iNi4wIiB5MT0iLTEwLjIiIHgyPSItNi4wIiB5Mj0iMTAuMiIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48bGluZSB4MT0iOTYuMiIgeTE9IjY5LjYiIHgyPSI5OC4wIiB5Mj0iNzMuMiIgc3Ryb2tlPSIjM2Y2ZmM0IiBzdHJva2Utd2lkdGg9IjMuNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjEwMS44IiB5MT0iNjkuNiIgeDI9IjEwMC4wIiB5Mj0iNzMuMiIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjMuNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOTUuMCA5Mi4wKSByb3RhdGUoMCkiIHN0cm9rZT0iI2Q5NTAzYSIgc3Ryb2tlLXdpZHRoPSIzLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+PGxpbmUgeDE9Ii00LjAiIHkxPSItNi44IiB4Mj0iNC4wIiB5Mj0iNi44Ii8+PGxpbmUgeDE9IjQuMCIgeTE9Ii02LjgiIHgyPSItNC4wIiB5Mj0iNi44Ii8+PGNpcmNsZSByPSIxLjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0ibm9uZSIgb3BhY2l0eT0iLjc1Ii8+PC9nPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEwNy4wIDkyLjApIHJvdGF0ZSgwKSIgc3Ryb2tlPSIjM2Y2ZmM0IiBzdHJva2Utd2lkdGg9IjMuNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIj48bGluZSB4MT0iLTQuMCIgeTE9Ii02LjgiIHgyPSI0LjAiIHkyPSI2LjgiLz48bGluZSB4MT0iNC4wIiB5MT0iLTYuOCIgeDI9Ii00LjAiIHkyPSI2LjgiLz48Y2lyY2xlIHI9IjEuNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIiBvcGFjaXR5PSIuNzUiLz48L2c+PC9zdmc+"}, {"id": "M1_3", "label": "중기", "tray_cap": "그림 3", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjEwMC4wIiBjeT0iNzUuMCIgcng9IjYwLjAiIHJ5PSI2MC4wIiBmaWxsPSJ1cmwoI2cpIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iNTAuMCIgY3k9Ijc1LjAiIHI9IjIuNiIgZmlsbD0iIzdkNzJhZCIvPjxsaW5lIHgxPSI1My42IiB5MT0iNzUuMCIgeDI9IjU3LjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNTIuNSIgeTE9Ijc3LjUiIHgyPSI1NC45IiB5Mj0iNzkuOSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjUwLjAiIHkxPSI3OC42IiB4Mj0iNTAuMCIgeTI9IjgyLjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI0Ny41IiB5MT0iNzcuNSIgeDI9IjQ1LjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNDYuNCIgeTE9Ijc1LjAiIHgyPSI0My4wIiB5Mj0iNzUuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjQ3LjUiIHkxPSI3Mi41IiB4Mj0iNDUuMSIgeTI9IjcwLjEiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI1MC4wIiB5MT0iNzEuNCIgeDI9IjUwLjAiIHkyPSI2OC4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNTIuNSIgeTE9IjcyLjUiIHgyPSI1NC45IiB5Mj0iNzAuMSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGNpcmNsZSBjeD0iMTUwLjAiIGN5PSI3NS4wIiByPSIyLjYiIGZpbGw9IiM3ZDcyYWQiLz48bGluZSB4MT0iMTUzLjYiIHkxPSI3NS4wIiB4Mj0iMTU3LjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTUyLjUiIHkxPSI3Ny41IiB4Mj0iMTU0LjkiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTUwLjAiIHkxPSI3OC42IiB4Mj0iMTUwLjAiIHkyPSI4Mi4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ3LjUiIHkxPSI3Ny41IiB4Mj0iMTQ1LjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ2LjQiIHkxPSI3NS4wIiB4Mj0iMTQzLjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQ3LjUiIHkxPSI3Mi41IiB4Mj0iMTQ1LjEiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTUwLjAiIHkxPSI3MS40IiB4Mj0iMTUwLjAiIHkyPSI2OC4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTUyLjUiIHkxPSI3Mi41IiB4Mj0iMTU0LjkiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNTAuMCIgeTE9Ijc1LjAiIHgyPSI5My4wIiB5Mj0iNTEuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxsaW5lIHgxPSIxNTAuMCIgeTE9Ijc1LjAiIHgyPSIxMDcuMCIgeTI9IjUxLjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg5My4wIDUxLjApIHJvdGF0ZSg5MCkiIHN0cm9rZT0iI2Q5NTAzYSIgc3Ryb2tlLXdpZHRoPSIzLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+PGxpbmUgeDE9Ii02LjUiIHkxPSItMTEuMCIgeDI9IjYuNSIgeTI9IjExLjAiLz48bGluZSB4MT0iNi41IiB5MT0iLTExLjAiIHgyPSItNi41IiB5Mj0iMTEuMCIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMDcuMCA1MS4wKSByb3RhdGUoOTApIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMy40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItNi41IiB5MT0iLTExLjAiIHgyPSI2LjUiIHkyPSIxMS4wIi8+PGxpbmUgeDE9IjYuNSIgeTE9Ii0xMS4wIiB4Mj0iLTYuNSIgeTI9IjExLjAiLz48Y2lyY2xlIHI9IjEuNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIiBvcGFjaXR5PSIuNzUiLz48L2c+PGxpbmUgeDE9IjUwLjAiIHkxPSI3NS4wIiB4Mj0iOTMuMCIgeTI9Ijk5LjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48bGluZSB4MT0iMTUwLjAiIHkxPSI3NS4wIiB4Mj0iMTA3LjAiIHkyPSI5OS4wIiBzdHJva2U9IiNiNmFkZDgiIHN0cm9rZS13aWR0aD0iMC45Ii8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOTMuMCA5OS4wKSByb3RhdGUoOTApIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMy40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItNC41IiB5MT0iLTcuNiIgeDI9IjQuNSIgeTI9IjcuNiIvPjxsaW5lIHgxPSI0LjUiIHkxPSItNy42IiB4Mj0iLTQuNSIgeTI9IjcuNiIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMDcuMCA5OS4wKSByb3RhdGUoOTApIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMy40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItNC41IiB5MT0iLTcuNiIgeDI9IjQuNSIgeTI9IjcuNiIvPjxsaW5lIHgxPSI0LjUiIHkxPSItNy42IiB4Mj0iLTQuNSIgeTI9IjcuNiIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48L3N2Zz4="}, {"id": "M1_4", "label": "후기", "tray_cap": "그림 4", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjEwMC4wIiBjeT0iNzUuMCIgcng9IjY0LjAiIHJ5PSI1NC4wIiBmaWxsPSJ1cmwoI2cpIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iNDYuMCIgY3k9Ijc1LjAiIHI9IjIuNiIgZmlsbD0iIzdkNzJhZCIvPjxsaW5lIHgxPSI0OS42IiB5MT0iNzUuMCIgeDI9IjUzLjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNDguNSIgeTE9Ijc3LjUiIHgyPSI1MC45IiB5Mj0iNzkuOSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjQ2LjAiIHkxPSI3OC42IiB4Mj0iNDYuMCIgeTI9IjgyLjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI0My41IiB5MT0iNzcuNSIgeDI9IjQxLjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNDIuNCIgeTE9Ijc1LjAiIHgyPSIzOS4wIiB5Mj0iNzUuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjQzLjUiIHkxPSI3Mi41IiB4Mj0iNDEuMSIgeTI9IjcwLjEiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI0Ni4wIiB5MT0iNzEuNCIgeDI9IjQ2LjAiIHkyPSI2OC4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNDguNSIgeTE9IjcyLjUiIHgyPSI1MC45IiB5Mj0iNzAuMSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGNpcmNsZSBjeD0iMTU0LjAiIGN5PSI3NS4wIiByPSIyLjYiIGZpbGw9IiM3ZDcyYWQiLz48bGluZSB4MT0iMTU3LjYiIHkxPSI3NS4wIiB4Mj0iMTYxLjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTU2LjUiIHkxPSI3Ny41IiB4Mj0iMTU4LjkiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTU0LjAiIHkxPSI3OC42IiB4Mj0iMTU0LjAiIHkyPSI4Mi4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTUxLjUiIHkxPSI3Ny41IiB4Mj0iMTQ5LjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTUwLjQiIHkxPSI3NS4wIiB4Mj0iMTQ3LjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTUxLjUiIHkxPSI3Mi41IiB4Mj0iMTQ5LjEiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTU0LjAiIHkxPSI3MS40IiB4Mj0iMTU0LjAiIHkyPSI2OC4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTU2LjUiIHkxPSI3Mi41IiB4Mj0iMTU4LjkiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNDYuMCIgeTE9Ijc1LjAiIHgyPSI2Ni4wIiB5Mj0iNTEuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxsaW5lIHgxPSIxNTQuMCIgeTE9Ijc1LjAiIHgyPSIxMzQuMCIgeTI9IjUxLjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg2Ni4wIDUxLjApIHJvdGF0ZSg5MCkiIHN0cm9rZT0iI2Q5NTAzYSIgc3Ryb2tlLXdpZHRoPSIzLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+PGxpbmUgeDE9Ii02LjUiIHkxPSItMTEuMCIgeDI9IjYuNSIgeTI9IjExLjAiLz48bGluZSB4MT0iNi41IiB5MT0iLTExLjAiIHgyPSItNi41IiB5Mj0iMTEuMCIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMzQuMCA1MS4wKSByb3RhdGUoOTApIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMy40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItNi41IiB5MT0iLTExLjAiIHgyPSI2LjUiIHkyPSIxMS4wIi8+PGxpbmUgeDE9IjYuNSIgeTE9Ii0xMS4wIiB4Mj0iLTYuNSIgeTI9IjExLjAiLz48Y2lyY2xlIHI9IjEuNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIiBvcGFjaXR5PSIuNzUiLz48L2c+PGxpbmUgeDE9IjQ2LjAiIHkxPSI3NS4wIiB4Mj0iNjYuMCIgeTI9Ijk5LjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48bGluZSB4MT0iMTU0LjAiIHkxPSI3NS4wIiB4Mj0iMTM0LjAiIHkyPSI5OS4wIiBzdHJva2U9IiNiNmFkZDgiIHN0cm9rZS13aWR0aD0iMC45Ii8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNjYuMCA5OS4wKSByb3RhdGUoOTApIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMy40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItNC41IiB5MT0iLTcuNiIgeDI9IjQuNSIgeTI9IjcuNiIvPjxsaW5lIHgxPSI0LjUiIHkxPSItNy42IiB4Mj0iLTQuNSIgeTI9IjcuNiIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMzQuMCA5OS4wKSByb3RhdGUoOTApIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMy40IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItNC41IiB5MT0iLTcuNiIgeDI9IjQuNSIgeTI9IjcuNiIvPjxsaW5lIHgxPSI0LjUiIHkxPSItNy42IiB4Mj0iLTQuNSIgeTI9IjcuNiIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48L3N2Zz4="}, {"id": "M1_5", "label": "말기", "tray_cap": "그림 5", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGNpcmNsZSBjeD0iNzAuMCIgY3k9Ijc1LjAiIHI9IjQ0IiBmaWxsPSIjZGNkMmYxIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iMTMwLjAiIGN5PSI3NS4wIiByPSI0NCIgZmlsbD0iI2RjZDJmMSIgc3Ryb2tlPSIjOGQ4MmJkIiBzdHJva2Utd2lkdGg9IjEuNiIvPjxjaXJjbGUgY3g9IjcwLjAiIGN5PSI3NS4wIiByPSI0MyIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjEzMC4wIiBjeT0iNzUuMCIgcj0iNDMiIGZpbGw9InVybCgjZykiLz48Y2lyY2xlIGN4PSI2Mi4wIiBjeT0iNzUuMCIgcj0iMjMiIGZpbGw9IiNmOGY1ZmUiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjIiIHN0cm9rZS1kYXNoYXJyYXk9IjMgMi41Ii8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTcuMCA2OS4wKSByb3RhdGUoMjApIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItNC41IiB5MT0iLTcuNiIgeDI9IjQuNSIgeTI9IjcuNiIvPjxsaW5lIHgxPSI0LjUiIHkxPSItNy42IiB4Mj0iLTQuNSIgeTI9IjcuNiIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg2OC4wIDgzLjApIHJvdGF0ZSgtMjApIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItMy4wIiB5MT0iLTUuMSIgeDI9IjMuMCIgeTI9IjUuMSIvPjxsaW5lIHgxPSIzLjAiIHkxPSItNS4xIiB4Mj0iLTMuMCIgeTI9IjUuMSIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48Y2lyY2xlIGN4PSIxMzguMCIgY3k9Ijc1LjAiIHI9IjIzIiBmaWxsPSIjZjhmNWZlIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS4yIiBzdHJva2UtZGFzaGFycmF5PSIzIDIuNSIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEzMy4wIDY5LjApIHJvdGF0ZSgyMCkiIHN0cm9rZT0iIzNmNmZjNCIgc3Ryb2tlLXdpZHRoPSIyLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+PGxpbmUgeDE9Ii00LjUiIHkxPSItNy42IiB4Mj0iNC41IiB5Mj0iNy42Ii8+PGxpbmUgeDE9IjQuNSIgeTE9Ii03LjYiIHgyPSItNC41IiB5Mj0iNy42Ii8+PGNpcmNsZSByPSIxLjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0ibm9uZSIgb3BhY2l0eT0iLjc1Ii8+PC9nPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NC4wIDgzLjApIHJvdGF0ZSgtMjApIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItMy4wIiB5MT0iLTUuMSIgeDI9IjMuMCIgeTI9IjUuMSIvPjxsaW5lIHgxPSIzLjAiIHkxPSItNS4xIiB4Mj0iLTMuMCIgeTI9IjUuMSIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48L3N2Zz4="}], "meiosisII": [{"id": "M2_1", "label": "전기", "tray_cap": "그림 1", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjUyLjAiIGN5PSI3NS4wIiByeD0iNDcuMCIgcnk9IjQ3LjAiIGZpbGw9InVybCgjZykiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48ZWxsaXBzZSBjeD0iMTQ4LjAiIGN5PSI3NS4wIiByeD0iNDcuMCIgcnk9IjQ3LjAiIGZpbGw9InVybCgjZykiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48Y2lyY2xlIGN4PSI1Mi4wIiBjeT0iNzUuMCIgcj0iMjciIGZpbGw9IiNmOGY1ZmUiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0Ni4wIDY4LjApIHJvdGF0ZSgyNSkiIHN0cm9rZT0iI2Q5NTAzYSIgc3Ryb2tlLXdpZHRoPSIyLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+PGxpbmUgeDE9Ii01LjAiIHkxPSItOC41IiB4Mj0iNS4wIiB5Mj0iOC41Ii8+PGxpbmUgeDE9IjUuMCIgeTE9Ii04LjUiIHgyPSItNS4wIiB5Mj0iOC41Ii8+PGNpcmNsZSByPSIxLjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0ibm9uZSIgb3BhY2l0eT0iLjc1Ii8+PC9nPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDYwLjAgODQuMCkgcm90YXRlKC0yNSkiIHN0cm9rZT0iIzNmNmZjNCIgc3Ryb2tlLXdpZHRoPSIyLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+PGxpbmUgeDE9Ii0zLjUiIHkxPSItNi4wIiB4Mj0iMy41IiB5Mj0iNi4wIi8+PGxpbmUgeDE9IjMuNSIgeTE9Ii02LjAiIHgyPSItMy41IiB5Mj0iNi4wIi8+PGNpcmNsZSByPSIxLjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0ibm9uZSIgb3BhY2l0eT0iLjc1Ii8+PC9nPjxjaXJjbGUgY3g9IjE0OC4wIiBjeT0iNzUuMCIgcj0iMjciIGZpbGw9IiNmOGY1ZmUiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNDIuMCA2OC4wKSByb3RhdGUoMjUpIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiPjxsaW5lIHgxPSItNS4wIiB5MT0iLTguNSIgeDI9IjUuMCIgeTI9IjguNSIvPjxsaW5lIHgxPSI1LjAiIHkxPSItOC41IiB4Mj0iLTUuMCIgeTI9IjguNSIvPjxjaXJjbGUgcj0iMS41IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiIG9wYWNpdHk9Ii43NSIvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNTYuMCA4NC4wKSByb3RhdGUoLTI1KSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjIuNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIj48bGluZSB4MT0iLTMuNSIgeTE9Ii02LjAiIHgyPSIzLjUiIHkyPSI2LjAiLz48bGluZSB4MT0iMy41IiB5MT0iLTYuMCIgeDI9Ii0zLjUiIHkyPSI2LjAiLz48Y2lyY2xlIHI9IjEuNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIiBvcGFjaXR5PSIuNzUiLz48L2c+PC9zdmc+"}, {"id": "M2_2", "label": "중기", "tray_cap": "그림 2", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjUyLjAiIGN5PSI3NS4wIiByeD0iNDcuMCIgcnk9IjQ3LjAiIGZpbGw9InVybCgjZykiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48ZWxsaXBzZSBjeD0iMTQ4LjAiIGN5PSI3NS4wIiByeD0iNDcuMCIgcnk9IjQ3LjAiIGZpbGw9InVybCgjZykiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48Y2lyY2xlIGN4PSIxMy4wIiBjeT0iNzUuMCIgcj0iMi42IiBmaWxsPSIjN2Q3MmFkIi8+PGxpbmUgeDE9IjE2LjYiIHkxPSI3NS4wIiB4Mj0iMjAuMCIgeTI9Ijc1LjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxNS41IiB5MT0iNzcuNSIgeDI9IjE3LjkiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTMuMCIgeTE9Ijc4LjYiIHgyPSIxMy4wIiB5Mj0iODIuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjEwLjUiIHkxPSI3Ny41IiB4Mj0iOC4xIiB5Mj0iNzkuOSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjkuNCIgeTE9Ijc1LjAiIHgyPSI2LjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTAuNSIgeTE9IjcyLjUiIHgyPSI4LjEiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTMuMCIgeTE9IjcxLjQiIHgyPSIxMy4wIiB5Mj0iNjguMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE1LjUiIHkxPSI3Mi41IiB4Mj0iMTcuOSIgeTI9IjcwLjEiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjkxLjAiIGN5PSI3NS4wIiByPSIyLjYiIGZpbGw9IiM3ZDcyYWQiLz48bGluZSB4MT0iOTQuNiIgeTE9Ijc1LjAiIHgyPSI5OC4wIiB5Mj0iNzUuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjkzLjUiIHkxPSI3Ny41IiB4Mj0iOTUuOSIgeTI9Ijc5LjkiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI5MS4wIiB5MT0iNzguNiIgeDI9IjkxLjAiIHkyPSI4Mi4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iODguNSIgeTE9Ijc3LjUiIHgyPSI4Ni4xIiB5Mj0iNzkuOSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9Ijg3LjQiIHkxPSI3NS4wIiB4Mj0iODQuMCIgeTI9Ijc1LjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI4OC41IiB5MT0iNzIuNSIgeDI9Ijg2LjEiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iOTEuMCIgeTE9IjcxLjQiIHgyPSI5MS4wIiB5Mj0iNjguMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjkzLjUiIHkxPSI3Mi41IiB4Mj0iOTUuOSIgeTI9IjcwLjEiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxMy4wIiB5MT0iNzUuMCIgeDI9IjUyLjAiIHkyPSI2MS4wIiBzdHJva2U9IiNiNmFkZDgiIHN0cm9rZS13aWR0aD0iMC45Ii8+PGxpbmUgeDE9IjkxLjAiIHkxPSI3NS4wIiB4Mj0iNTIuMCIgeTI9IjYxLjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg1Mi4wIDYxLjApIHJvdGF0ZSg5MCkiIHN0cm9rZT0iI2Q5NTAzYSIgc3Ryb2tlLXdpZHRoPSIyLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+PGxpbmUgeDE9Ii01LjAiIHkxPSItOC41IiB4Mj0iNS4wIiB5Mj0iOC41Ii8+PGxpbmUgeDE9IjUuMCIgeTE9Ii04LjUiIHgyPSItNS4wIiB5Mj0iOC41Ii8+PGNpcmNsZSByPSIxLjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0ibm9uZSIgb3BhY2l0eT0iLjc1Ii8+PC9nPjxsaW5lIHgxPSIxMy4wIiB5MT0iNzUuMCIgeDI9IjUyLjAiIHkyPSI5MS4wIiBzdHJva2U9IiNiNmFkZDgiIHN0cm9rZS13aWR0aD0iMC45Ii8+PGxpbmUgeDE9IjkxLjAiIHkxPSI3NS4wIiB4Mj0iNTIuMCIgeTI9IjkxLjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg1Mi4wIDkxLjApIHJvdGF0ZSg5MCkiIHN0cm9rZT0iIzNmNmZjNCIgc3Ryb2tlLXdpZHRoPSIyLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+PGxpbmUgeDE9Ii0zLjUiIHkxPSItNi4wIiB4Mj0iMy41IiB5Mj0iNi4wIi8+PGxpbmUgeDE9IjMuNSIgeTE9Ii02LjAiIHgyPSItMy41IiB5Mj0iNi4wIi8+PGNpcmNsZSByPSIxLjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0ibm9uZSIgb3BhY2l0eT0iLjc1Ii8+PC9nPjxjaXJjbGUgY3g9IjEwOS4wIiBjeT0iNzUuMCIgcj0iMi42IiBmaWxsPSIjN2Q3MmFkIi8+PGxpbmUgeDE9IjExMi42IiB5MT0iNzUuMCIgeDI9IjExNi4wIiB5Mj0iNzUuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjExMS41IiB5MT0iNzcuNSIgeDI9IjExMy45IiB5Mj0iNzkuOSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjEwOS4wIiB5MT0iNzguNiIgeDI9IjEwOS4wIiB5Mj0iODIuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjEwNi41IiB5MT0iNzcuNSIgeDI9IjEwNC4xIiB5Mj0iNzkuOSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjEwNS40IiB5MT0iNzUuMCIgeDI9IjEwMi4wIiB5Mj0iNzUuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjEwNi41IiB5MT0iNzIuNSIgeDI9IjEwNC4xIiB5Mj0iNzAuMSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjEwOS4wIiB5MT0iNzEuNCIgeDI9IjEwOS4wIiB5Mj0iNjguMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjExMS41IiB5MT0iNzIuNSIgeDI9IjExMy45IiB5Mj0iNzAuMSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGNpcmNsZSBjeD0iMTg3LjAiIGN5PSI3NS4wIiByPSIyLjYiIGZpbGw9IiM3ZDcyYWQiLz48bGluZSB4MT0iMTkwLjYiIHkxPSI3NS4wIiB4Mj0iMTk0LjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTg5LjUiIHkxPSI3Ny41IiB4Mj0iMTkxLjkiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTg3LjAiIHkxPSI3OC42IiB4Mj0iMTg3LjAiIHkyPSI4Mi4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTg0LjUiIHkxPSI3Ny41IiB4Mj0iMTgyLjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTgzLjQiIHkxPSI3NS4wIiB4Mj0iMTgwLjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTg0LjUiIHkxPSI3Mi41IiB4Mj0iMTgyLjEiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTg3LjAiIHkxPSI3MS40IiB4Mj0iMTg3LjAiIHkyPSI2OC4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTg5LjUiIHkxPSI3Mi41IiB4Mj0iMTkxLjkiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTA5LjAiIHkxPSI3NS4wIiB4Mj0iMTQ4LjAiIHkyPSI2MS4wIiBzdHJva2U9IiNiNmFkZDgiIHN0cm9rZS13aWR0aD0iMC45Ii8+PGxpbmUgeDE9IjE4Ny4wIiB5MT0iNzUuMCIgeDI9IjE0OC4wIiB5Mj0iNjEuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0OC4wIDYxLjApIHJvdGF0ZSg5MCkiIHN0cm9rZT0iIzNmNmZjNCIgc3Ryb2tlLXdpZHRoPSIyLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+PGxpbmUgeDE9Ii01LjAiIHkxPSItOC41IiB4Mj0iNS4wIiB5Mj0iOC41Ii8+PGxpbmUgeDE9IjUuMCIgeTE9Ii04LjUiIHgyPSItNS4wIiB5Mj0iOC41Ii8+PGNpcmNsZSByPSIxLjUiIGZpbGw9IiNmZmYiIHN0cm9rZT0ibm9uZSIgb3BhY2l0eT0iLjc1Ii8+PC9nPjxsaW5lIHgxPSIxMDkuMCIgeTE9Ijc1LjAiIHgyPSIxNDguMCIgeTI9IjkxLjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48bGluZSB4MT0iMTg3LjAiIHkxPSI3NS4wIiB4Mj0iMTQ4LjAiIHkyPSI5MS4wIiBzdHJva2U9IiNiNmFkZDgiIHN0cm9rZS13aWR0aD0iMC45Ii8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTQ4LjAgOTEuMCkgcm90YXRlKDkwKSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIj48bGluZSB4MT0iLTMuNSIgeTE9Ii02LjAiIHgyPSIzLjUiIHkyPSI2LjAiLz48bGluZSB4MT0iMy41IiB5MT0iLTYuMCIgeDI9Ii0zLjUiIHkyPSI2LjAiLz48Y2lyY2xlIHI9IjEuNSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSJub25lIiBvcGFjaXR5PSIuNzUiLz48L2c+PC9zdmc+"}, {"id": "M2_3", "label": "후기", "tray_cap": "그림 3", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjUyLjAiIGN5PSI3NS4wIiByeD0iNDcuMCIgcnk9IjQ3LjAiIGZpbGw9InVybCgjZykiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48ZWxsaXBzZSBjeD0iMTQ4LjAiIGN5PSI3NS4wIiByeD0iNDcuMCIgcnk9IjQ3LjAiIGZpbGw9InVybCgjZykiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48Y2lyY2xlIGN4PSIxMS4wIiBjeT0iNzUuMCIgcj0iMi42IiBmaWxsPSIjN2Q3MmFkIi8+PGxpbmUgeDE9IjE0LjYiIHkxPSI3NS4wIiB4Mj0iMTguMCIgeTI9Ijc1LjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxMy41IiB5MT0iNzcuNSIgeDI9IjE1LjkiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTEuMCIgeTE9Ijc4LjYiIHgyPSIxMS4wIiB5Mj0iODIuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjguNSIgeTE9Ijc3LjUiIHgyPSI2LjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iNy40IiB5MT0iNzUuMCIgeDI9IjQuMCIgeTI9Ijc1LjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI4LjUiIHkxPSI3Mi41IiB4Mj0iNi4xIiB5Mj0iNzAuMSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjExLjAiIHkxPSI3MS40IiB4Mj0iMTEuMCIgeTI9IjY4LjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxMy41IiB5MT0iNzIuNSIgeDI9IjE1LjkiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48Y2lyY2xlIGN4PSI5My4wIiBjeT0iNzUuMCIgcj0iMi42IiBmaWxsPSIjN2Q3MmFkIi8+PGxpbmUgeDE9Ijk2LjYiIHkxPSI3NS4wIiB4Mj0iMTAwLjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iOTUuNSIgeTE9Ijc3LjUiIHgyPSI5Ny45IiB5Mj0iNzkuOSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjkzLjAiIHkxPSI3OC42IiB4Mj0iOTMuMCIgeTI9IjgyLjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI5MC41IiB5MT0iNzcuNSIgeDI9Ijg4LjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iODkuNCIgeTE9Ijc1LjAiIHgyPSI4Ni4wIiB5Mj0iNzUuMCIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjkwLjUiIHkxPSI3Mi41IiB4Mj0iODguMSIgeTI9IjcwLjEiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI5My4wIiB5MT0iNzEuNCIgeDI9IjkzLjAiIHkyPSI2OC4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iOTUuNSIgeTE9IjcyLjUiIHgyPSI5Ny45IiB5Mj0iNzAuMSIgc3Ryb2tlPSIjN2Q3MmFkIiBzdHJva2Utd2lkdGg9IjAuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjExLjAiIHkxPSI3NS4wIiB4Mj0iMzUuMCIgeTI9IjYxLjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48bGluZSB4MT0iOTMuMCIgeTE9Ijc1LjAiIHgyPSI2OS4wIiB5Mj0iNjEuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxwb2x5bGluZSBwb2ludHM9IjQyLjYsNTUuMSAzNS4wLDYxLjAgNDIuNiw2Ni44IiBmaWxsPSJub25lIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cG9seWxpbmUgcG9pbnRzPSI2MS40LDU1LjEgNjkuMCw2MS4wIDYxLjQsNjYuOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGxpbmUgeDE9IjExLjAiIHkxPSI3NS4wIiB4Mj0iMzUuMCIgeTI9IjkxLjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48bGluZSB4MT0iOTMuMCIgeTE9Ijc1LjAiIHgyPSI2OS4wIiB5Mj0iOTEuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxwb2x5bGluZSBwb2ludHM9IjQwLjQsODYuOSAzNS4wLDkxLjAgNDAuNCw5NS4xIiBmaWxsPSJub25lIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cG9seWxpbmUgcG9pbnRzPSI2My42LDg2LjkgNjkuMCw5MS4wIDYzLjYsOTUuMSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2Y2ZmM0IiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iMTA3LjAiIGN5PSI3NS4wIiByPSIyLjYiIGZpbGw9IiM3ZDcyYWQiLz48bGluZSB4MT0iMTEwLjYiIHkxPSI3NS4wIiB4Mj0iMTE0LjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTA5LjUiIHkxPSI3Ny41IiB4Mj0iMTExLjkiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTA3LjAiIHkxPSI3OC42IiB4Mj0iMTA3LjAiIHkyPSI4Mi4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTA0LjUiIHkxPSI3Ny41IiB4Mj0iMTAyLjEiIHkyPSI3OS45IiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTAzLjQiIHkxPSI3NS4wIiB4Mj0iMTAwLjAiIHkyPSI3NS4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTA0LjUiIHkxPSI3Mi41IiB4Mj0iMTAyLjEiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTA3LjAiIHkxPSI3MS40IiB4Mj0iMTA3LjAiIHkyPSI2OC4wIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTA5LjUiIHkxPSI3Mi41IiB4Mj0iMTExLjkiIHkyPSI3MC4xIiBzdHJva2U9IiM3ZDcyYWQiIHN0cm9rZS13aWR0aD0iMC44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48Y2lyY2xlIGN4PSIxODkuMCIgY3k9Ijc1LjAiIHI9IjIuNiIgZmlsbD0iIzdkNzJhZCIvPjxsaW5lIHgxPSIxOTIuNiIgeTE9Ijc1LjAiIHgyPSIxOTYuMCIgeTI9Ijc1LjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxOTEuNSIgeTE9Ijc3LjUiIHgyPSIxOTMuOSIgeTI9Ijc5LjkiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxODkuMCIgeTE9Ijc4LjYiIHgyPSIxODkuMCIgeTI9IjgyLjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxODYuNSIgeTE9Ijc3LjUiIHgyPSIxODQuMSIgeTI9Ijc5LjkiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxODUuNCIgeTE9Ijc1LjAiIHgyPSIxODIuMCIgeTI9Ijc1LjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxODYuNSIgeTE9IjcyLjUiIHgyPSIxODQuMSIgeTI9IjcwLjEiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxODkuMCIgeTE9IjcxLjQiIHgyPSIxODkuMCIgeTI9IjY4LjAiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxOTEuNSIgeTE9IjcyLjUiIHgyPSIxOTMuOSIgeTI9IjcwLjEiIHN0cm9rZT0iIzdkNzJhZCIgc3Ryb2tlLXdpZHRoPSIwLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxMDcuMCIgeTE9Ijc1LjAiIHgyPSIxMzEuMCIgeTI9IjYxLjAiIHN0cm9rZT0iI2I2YWRkOCIgc3Ryb2tlLXdpZHRoPSIwLjkiLz48bGluZSB4MT0iMTg5LjAiIHkxPSI3NS4wIiB4Mj0iMTY1LjAiIHkyPSI2MS4wIiBzdHJva2U9IiNiNmFkZDgiIHN0cm9rZS13aWR0aD0iMC45Ii8+PHBvbHlsaW5lIHBvaW50cz0iMTM4LjcsNTUuMSAxMzEuMCw2MS4wIDEzOC43LDY2LjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNmNmZjNCIgc3Ryb2tlLXdpZHRoPSIyLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwb2x5bGluZSBwb2ludHM9IjE1Ny4zLDU1LjEgMTY1LjAsNjEuMCAxNTcuMyw2Ni44IiBmaWxsPSJub25lIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48bGluZSB4MT0iMTA3LjAiIHkxPSI3NS4wIiB4Mj0iMTMxLjAiIHkyPSI5MS4wIiBzdHJva2U9IiNiNmFkZDgiIHN0cm9rZS13aWR0aD0iMC45Ii8+PGxpbmUgeDE9IjE4OS4wIiB5MT0iNzUuMCIgeDI9IjE2NS4wIiB5Mj0iOTEuMCIgc3Ryb2tlPSIjYjZhZGQ4IiBzdHJva2Utd2lkdGg9IjAuOSIvPjxwb2x5bGluZSBwb2ludHM9IjEzNi40LDg2LjkgMTMxLjAsOTEuMCAxMzYuNCw5NS4xIiBmaWxsPSJub25lIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cG9seWxpbmUgcG9pbnRzPSIxNTkuNiw4Ni45IDE2NS4wLDkxLjAgMTU5LjYsOTUuMSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+"}, {"id": "M2_4", "label": "말기", "tray_cap": "그림 4", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjY0LjAiIGN5PSIzOC4wIiByeD0iMzEuMCIgcnk9IjMxLjAiIGZpbGw9InVybCgjZykiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48Y2lyY2xlIGN4PSI2NC4wIiBjeT0iMzguMCIgcj0iMTgiIGZpbGw9IiNmOGY1ZmUiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjIiIHN0cm9rZS1kYXNoYXJyYXk9IjMgMi41Ii8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTkuMCAzOC4wKSByb3RhdGUoMTUpIj48bGluZSB4MT0iMCIgeTE9Ii04LjAiIHgyPSIwIiB5Mj0iOC4wIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L2c+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNzAuMCAzOS4wKSByb3RhdGUoLTE1KSI+PGxpbmUgeDE9IjAiIHkxPSItNi4wIiB4Mj0iMCIgeTI9IjYuMCIgc3Ryb2tlPSIjM2Y2ZmM0IiBzdHJva2Utd2lkdGg9IjIuNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9nPjxlbGxpcHNlIGN4PSIxMzYuMCIgY3k9IjM4LjAiIHJ4PSIzMS4wIiByeT0iMzEuMCIgZmlsbD0idXJsKCNnKSIgc3Ryb2tlPSIjOGQ4MmJkIiBzdHJva2Utd2lkdGg9IjEuNiIvPjxjaXJjbGUgY3g9IjEzNi4wIiBjeT0iMzguMCIgcj0iMTgiIGZpbGw9IiNmOGY1ZmUiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjIiIHN0cm9rZS1kYXNoYXJyYXk9IjMgMi41Ii8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTMxLjAgMzguMCkgcm90YXRlKDE1KSI+PGxpbmUgeDE9IjAiIHkxPSItOC4wIiB4Mj0iMCIgeTI9IjguMCIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9nPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0Mi4wIDM5LjApIHJvdGF0ZSgtMTUpIj48bGluZSB4MT0iMCIgeTE9Ii02LjAiIHgyPSIwIiB5Mj0iNi4wIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L2c+PGVsbGlwc2UgY3g9IjY0LjAiIGN5PSIxMTIuMCIgcng9IjMxLjAiIHJ5PSIzMS4wIiBmaWxsPSJ1cmwoI2cpIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iNjQuMCIgY3k9IjExMi4wIiByPSIxOCIgZmlsbD0iI2Y4ZjVmZSIgc3Ryb2tlPSIjOGQ4MmJkIiBzdHJva2Utd2lkdGg9IjEuMiIgc3Ryb2tlLWRhc2hhcnJheT0iMyAyLjUiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg1OS4wIDExMi4wKSByb3RhdGUoMTUpIj48bGluZSB4MT0iMCIgeTE9Ii04LjAiIHgyPSIwIiB5Mj0iOC4wIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L2c+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNzAuMCAxMTMuMCkgcm90YXRlKC0xNSkiPjxsaW5lIHgxPSIwIiB5MT0iLTYuMCIgeDI9IjAiIHkyPSI2LjAiIHN0cm9rZT0iI2Q5NTAzYSIgc3Ryb2tlLXdpZHRoPSIyLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvZz48ZWxsaXBzZSBjeD0iMTM2LjAiIGN5PSIxMTIuMCIgcng9IjMxLjAiIHJ5PSIzMS4wIiBmaWxsPSJ1cmwoI2cpIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS42Ii8+PGNpcmNsZSBjeD0iMTM2LjAiIGN5PSIxMTIuMCIgcj0iMTgiIGZpbGw9IiNmOGY1ZmUiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjIiIHN0cm9rZS1kYXNoYXJyYXk9IjMgMi41Ii8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTMxLjAgMTEyLjApIHJvdGF0ZSgxNSkiPjxsaW5lIHgxPSIwIiB5MT0iLTguMCIgeDI9IjAiIHkyPSI4LjAiIHN0cm9rZT0iIzNmNmZjNCIgc3Ryb2tlLXdpZHRoPSIyLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNDIuMCAxMTMuMCkgcm90YXRlKC0xNSkiPjxsaW5lIHgxPSIwIiB5MT0iLTYuMCIgeDI9IjAiIHkyPSI2LjAiIHN0cm9rZT0iI2Q5NTAzYSIgc3Ryb2tlLXdpZHRoPSIyLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvZz48L3N2Zz4="}, {"id": "M2_5", "label": "생식세포(n)", "tray_cap": "그림 5", "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTUwIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjYwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjZmMmZkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNkMmYxIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjY0LjAiIGN5PSIzOC4wIiByeD0iMzEuMCIgcnk9IjMxLjAiIGZpbGw9InVybCgjZykiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48Y2lyY2xlIGN4PSI2NC4wIiBjeT0iMzguMCIgcj0iMTgiIGZpbGw9IiNmOGY1ZmUiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz48cGF0aCBkPSJNNTcuNCAzMy44IFE2Ni40IDMwLjggNzAuNiAzNS42IiBmaWxsPSJub25lIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii44NSIvPjxwYXRoIGQ9Ik01OC4wIDM4LjAgUTYyLjggNDQuMCA3MC4wIDM5LjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNmNmZjNCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iLjg1Ii8+PHBhdGggZD0iTTU4LjYgNDIuOCBRNjQuMCAzNi44IDY5LjQgNDMuNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuODUiLz48cGF0aCBkPSJNNjEuNiAzMC44IFE3MC4wIDM0LjQgNjUuOCA0Mi4yIiBmaWxsPSJub25lIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii44NSIvPjxjaXJjbGUgY3g9IjYxLjAiIGN5PSIzNS4wIiByPSIyLjYiIGZpbGw9IiM4YTZiYjAiLz48ZWxsaXBzZSBjeD0iMTM2LjAiIGN5PSIzOC4wIiByeD0iMzEuMCIgcnk9IjMxLjAiIGZpbGw9InVybCgjZykiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48Y2lyY2xlIGN4PSIxMzYuMCIgY3k9IjM4LjAiIHI9IjE4IiBmaWxsPSIjZjhmNWZlIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS4yIi8+PHBhdGggZD0iTTEyOS40IDMzLjggUTEzOC40IDMwLjggMTQyLjYgMzUuNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuODUiLz48cGF0aCBkPSJNMTMwLjAgMzguMCBRMTM0LjggNDQuMCAxNDIuMCAzOS44IiBmaWxsPSJub25lIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii44NSIvPjxwYXRoIGQ9Ik0xMzAuNiA0Mi44IFExMzYuMCAzNi44IDE0MS40IDQzLjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Q5NTAzYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iLjg1Ii8+PHBhdGggZD0iTTEzMy42IDMwLjggUTE0Mi4wIDM0LjQgMTM3LjggNDIuMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2Y2ZmM0IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuODUiLz48Y2lyY2xlIGN4PSIxMzMuMCIgY3k9IjM1LjAiIHI9IjIuNiIgZmlsbD0iIzhhNmJiMCIvPjxlbGxpcHNlIGN4PSI2NC4wIiBjeT0iMTEyLjAiIHJ4PSIzMS4wIiByeT0iMzEuMCIgZmlsbD0idXJsKCNnKSIgc3Ryb2tlPSIjOGQ4MmJkIiBzdHJva2Utd2lkdGg9IjEuNiIvPjxjaXJjbGUgY3g9IjY0LjAiIGN5PSIxMTIuMCIgcj0iMTgiIGZpbGw9IiNmOGY1ZmUiIHN0cm9rZT0iIzhkODJiZCIgc3Ryb2tlLXdpZHRoPSIxLjIiLz48cGF0aCBkPSJNNTcuNCAxMDcuOCBRNjYuNCAxMDQuOCA3MC42IDEwOS42IiBmaWxsPSJub25lIiBzdHJva2U9IiNkOTUwM2EiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii44NSIvPjxwYXRoIGQ9Ik01OC4wIDExMi4wIFE2Mi44IDExOC4wIDcwLjAgMTEzLjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNmNmZjNCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iLjg1Ii8+PHBhdGggZD0iTTU4LjYgMTE2LjggUTY0LjAgMTEwLjggNjkuNCAxMTcuNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuODUiLz48cGF0aCBkPSJNNjEuNiAxMDQuOCBRNzAuMCAxMDguNCA2NS44IDExNi4yIiBmaWxsPSJub25lIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii44NSIvPjxjaXJjbGUgY3g9IjYxLjAiIGN5PSIxMDkuMCIgcj0iMi42IiBmaWxsPSIjOGE2YmIwIi8+PGVsbGlwc2UgY3g9IjEzNi4wIiBjeT0iMTEyLjAiIHJ4PSIzMS4wIiByeT0iMzEuMCIgZmlsbD0idXJsKCNnKSIgc3Ryb2tlPSIjOGQ4MmJkIiBzdHJva2Utd2lkdGg9IjEuNiIvPjxjaXJjbGUgY3g9IjEzNi4wIiBjeT0iMTEyLjAiIHI9IjE4IiBmaWxsPSIjZjhmNWZlIiBzdHJva2U9IiM4ZDgyYmQiIHN0cm9rZS13aWR0aD0iMS4yIi8+PHBhdGggZD0iTTEyOS40IDEwNy44IFExMzguNCAxMDQuOCAxNDIuNiAxMDkuNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDk1MDNhIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuODUiLz48cGF0aCBkPSJNMTMwLjAgMTEyLjAgUTEzNC44IDExOC4wIDE0Mi4wIDExMy44IiBmaWxsPSJub25lIiBzdHJva2U9IiMzZjZmYzQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9Ii44NSIvPjxwYXRoIGQ9Ik0xMzAuNiAxMTYuOCBRMTM2LjAgMTEwLjggMTQxLjQgMTE3LjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Q5NTAzYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iLjg1Ii8+PHBhdGggZD0iTTEzMy42IDEwNC44IFExNDIuMCAxMDguNCAxMzcuOCAxMTYuMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2Y2ZmM0IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuODUiLz48Y2lyY2xlIGN4PSIxMzMuMCIgY3k9IjEwOS4wIiByPSIyLjYiIGZpbGw9IiM4YTZiYjAiLz48L3N2Zz4="}]}
+</script>
+
+<script>
+const DATA = JSON.parse(document.getElementById('order-data').textContent);
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = lightbox.querySelector('img');
+function openLightbox(src){
+  lightboxImg.src = src;
+  lightbox.classList.add('open');
+}
+lightbox.addEventListener('click', ()=> lightbox.classList.remove('open'));
+
+function zoomBtnHTML(){
+  return `<button type="button" class="zoom-btn" data-zoom="1">⤢</button>`;
+}
+function wireZoom(el, src){
+  const btn = el.querySelector('[data-zoom]');
+  if(btn){
+    btn.onclick = (e)=>{ e.stopPropagation(); openLightbox(src); };
+  }
+}
+
+function buildOrderActivity(containerId, items){
+  const root = document.getElementById(containerId);
+  const n = items.length;
+  const shuffled = shuffle(items);
+  let slots = new Array(n).fill(null); // holds item id per slot
+
+  root.innerHTML = `
+    <div class="order-label">① 보관함 — 클릭해서 순서대로 옮기기</div>
+    <div class="order-tray" id="${containerId}-tray"></div>
+    <div class="order-label">② 정답 순서 칸 (간기/1분열 쪽이 1번)</div>
+    <div class="order-slots" id="${containerId}-slots"></div>
+    <div class="order-controls">
+      <button class="btn primary" id="${containerId}-check">채점하기</button>
+      <button class="btn ghost" id="${containerId}-reset">다시 섞기</button>
+    </div>
+    <div class="feedback-line" id="${containerId}-fb"></div>
+  `;
+
+  const trayEl = document.getElementById(containerId+'-tray');
+  const slotsEl = document.getElementById(containerId+'-slots');
+  const fbEl = document.getElementById(containerId+'-fb');
+
+  function render(){
+    trayEl.innerHTML = '';
+    shuffled.forEach(it=>{
+      const placed = slots.includes(it.id);
+      const tile = document.createElement('div');
+      tile.className = 'card-tile' + (placed?' placed':'');
+      tile.innerHTML = `${zoomBtnHTML()}<img src="${it.img}" alt=""><div class="cap">${it.tray_cap||'?'}</div>`;
+      tile.onclick = ()=>{
+        if(placed) return;
+        const emptyIdx = slots.indexOf(null);
+        if(emptyIdx===-1) return;
+        slots[emptyIdx] = it.id;
+        render();
+      };
+      wireZoom(tile, it.img);
+      trayEl.appendChild(tile);
+    });
+
+    slotsEl.innerHTML = '';
+    slots.forEach((id,idx)=>{
+      const slot = document.createElement('div');
+      slot.className = 'slot' + (id? ' filled':'');
+      if(id){
+        const it = items.find(x=>x.id===id);
+        slot.innerHTML = `<span class="num">${idx+1}</span>${zoomBtnHTML()}<img src="${it.img}" alt=""><div class="slot-label" data-role="label"></div>`;
+        slot.onclick = (e)=>{
+          if(e.target.closest('[data-zoom]')) return;
+          slots[idx]=null; fbEl.textContent=''; fbEl.className='feedback-line'; render();
+        };
+        wireZoom(slot, it.img);
+      } else {
+        slot.innerHTML = `<span class="num">${idx+1}</span>`;
+      }
+      slotsEl.appendChild(slot);
+    });
+  }
+
+  function grade(partial){
+    const filled = slots.filter(x=>x).length;
+    if(slots.includes(null) && !partial){
+      fbEl.textContent = '아직 모든 칸이 채워지지 않았어요.';
+      fbEl.className = 'feedback-line bad';
+      return;
+    }
+    if(filled===0){
+      fbEl.textContent = '아직 그림을 배치하지 않았어요.';
+      fbEl.className = 'feedback-line bad';
+      return;
+    }
+    let correctCount = 0;
+    const slotEls = slotsEl.children;
+    slots.forEach((id,idx)=>{
+      if(!id) return;
+      const it = items.find(x=>x.id===id);
+      const isCorrect = items[idx].label === it.label;
+      if(isCorrect) correctCount++;
+      const el = slotEls[idx];
+      el.classList.remove('correct','wrong');
+      el.classList.add(isCorrect?'correct':'wrong');
+      const label = el.querySelector('[data-role=label]');
+      if(label) label.textContent = it.label;
+      let mark = el.querySelector('.mark');
+      if(!mark){ mark = document.createElement('span'); mark.className='mark'; el.appendChild(mark); }
+      mark.textContent = isCorrect? '✓':'✕';
+      mark.className = 'mark ' + (isCorrect?'ok':'no');
+    });
+    const incomplete = filled < items.length;
+    if(correctCount===items.length){
+      fbEl.textContent = `정확해요! ${correctCount} / ${items.length}개 맞혔어요.`;
+      fbEl.className = 'feedback-line ok';
+    } else {
+      fbEl.textContent = incomplete
+        ? `채점 결과: ${correctCount} / ${items.length}개 정답 (${items.length-filled}칸 미배치)`
+        : `${correctCount} / ${items.length}개 맞혔어요. 빨간 칸을 다시 생각해 보세요.`;
+      fbEl.className = 'feedback-line bad';
+    }
+  }
+  document.getElementById(containerId+'-check').onclick = ()=>grade(false);
+  (window.ACTS = window.ACTS||[]).push(()=>grade(true));
+
+  document.getElementById(containerId+'-reset').onclick = ()=>{
+    slots = new Array(n).fill(null);
+    shuffled.sort(()=>Math.random()-0.5);
+    fbEl.textContent=''; fbEl.className='feedback-line';
+    render();
+  };
+
+  render();
+}
+
+function buildPickOne(containerId, items, correctId, explanation){
+  const root = document.getElementById(containerId);
+  const shuffled = shuffle(items);
+  let selected = null;
+  let checked = false;
+
+  root.innerHTML = `
+    <div class="pick-grid" id="${containerId}-grid"></div>
+    <div class="order-controls">
+      <button class="btn primary" id="${containerId}-check">채점하기</button>
+      <button class="btn ghost" id="${containerId}-reset">다시 하기</button>
+    </div>
+    <div class="feedback-line" id="${containerId}-fb"></div>
+  `;
+  const gridEl = document.getElementById(containerId+'-grid');
+  const fbEl = document.getElementById(containerId+'-fb');
+
+  function render(){
+    gridEl.innerHTML = '';
+    shuffled.forEach(it=>{
+      const tile = document.createElement('div');
+      let cls = 'pick-tile';
+      if(selected===it.id) cls += ' sel';
+      if(checked){
+        if(it.id===correctId) cls += ' correct';
+        else if(it.id===selected) cls += ' wrong';
+      }
+      tile.className = cls;
+      let markHTML = '';
+      if(checked && (it.id===correctId || it.id===selected)){
+        const ok = it.id===correctId;
+        markHTML = `<span class="mark ${ok?'ok':'no'}">${ok?'✓':'✕'}</span>`;
+      }
+      tile.innerHTML = `${zoomBtnHTML()}${markHTML}<img src="${it.img}" alt=""><div class="cap">${it.tray_cap||'?'}</div>`;
+      tile.onclick = (e)=>{
+        if(e.target.closest('[data-zoom]')) return;
+        if(checked) return;
+        selected = it.id;
+        render();
+      };
+      wireZoom(tile, it.img);
+      gridEl.appendChild(tile);
+    });
+  }
+
+  document.getElementById(containerId+'-check').onclick = ()=>{
+    if(!selected){
+      fbEl.textContent = '사진을 먼저 한 장 선택해 보세요.';
+      fbEl.className = 'feedback-line bad';
+      return;
+    }
+    checked = true;
+    render();
+    if(selected===correctId){
+      fbEl.textContent = '정답이에요! ' + (explanation||'');
+      fbEl.className = 'feedback-line ok';
+    } else {
+      fbEl.textContent = '다시 생각해 보세요. ' + (explanation||'');
+      fbEl.className = 'feedback-line bad';
+    }
+  };
+
+  document.getElementById(containerId+'-reset').onclick = ()=>{
+    selected = null; checked = false;
+    shuffled.sort(()=>Math.random()-0.5);
+    fbEl.textContent=''; fbEl.className='feedback-line';
+    render();
+  };
+
+  render();
+}
+
+
+function growTA(t){ t.style.height='auto'; t.style.height=(t.scrollHeight+2)+'px'; }
+document.querySelectorAll('textarea').forEach(t=>{
+  t.addEventListener('input',()=>growTA(t));
+  growTA(t);
+});
+const BASE_TITLE = document.title;
+function savePDF(){
+  const nm=(document.getElementById('stuName').value||'').trim();
+  const id=(document.getElementById('stuId').value||'').trim();
+  document.title = '체세포·생식세포분열_학습지' + (id?('_'+id):'') + (nm?('_'+nm):'');
+  (window.ACTS||[]).forEach(f=>f());
+  document.querySelectorAll('textarea').forEach(growTA);
+  setTimeout(()=>{ window.print(); },50);
+}
+window.addEventListener('beforeprint',()=>{ document.querySelectorAll('textarea').forEach(growTA); });
+window.addEventListener('afterprint',()=>{ document.title = BASE_TITLE; });
+
+buildOrderActivity('mitB', DATA.mitosisB);
+buildOrderActivity('meiA', DATA.meiosisI);
+buildOrderActivity('meiB', DATA.meiosisII);
+</script>
+
+</body>
+</html>
